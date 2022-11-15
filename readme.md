@@ -1,4 +1,4 @@
-# [Libreria](https://drive.google.com/file/d/1ctEk1Nvl12Lcq7zhmhrspcK4SLFbVuqo/view?usp=sharing){:target="\_blank"}
+# [Libreria](https://drive.google.com/file/d/1ctEk1Nvl12Lcq7zhmhrspcK4SLFbVuqo/view?usp=sharing)
 
 Realizar un programa que permita administrar una librería/biblioteca. Se deben poder ingresar, modificar, borrar y listar
 
