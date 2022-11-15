@@ -4,7 +4,8 @@
   "description": "Trabajo final de laboratorio de programacion 4 - TUP - UTNFRP",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "client": "cd libreria-client && npm run start",
+    "server": "cd libreria-server && python server.py"
   },
   "author": "",
   "license": "ISC"
