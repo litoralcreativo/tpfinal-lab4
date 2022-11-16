@@ -12,10 +12,10 @@ import "./index.css";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 
-import Datos from "./Components/Datos/Datos";
-import Editoriales from "./Components/Datos/Editoriales/Editoriales";
-import EditorialesList from "./Components/Datos/Editoriales/EditorialesList";
-import EditorialesForm from "./Components/Datos/Editoriales/EditorialesForm";
+import Datos from "./Components/Cruds/Cruds";
+import Editoriales from "./Components/Cruds/Editoriales/Editoriales";
+import EditorialesList from "./Components/Cruds/Editoriales/EditorialesList";
+import EditorialesForm from "./Components/Cruds/Editoriales/EditorialesForm";
 import About from "./Components/About/About";
 
 const root = ReactDOM.createRoot(

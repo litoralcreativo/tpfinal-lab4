@@ -113,9 +113,9 @@ function EditorialesList() {
           </TableHead>
           <TableBody>
             {datos.map((editorial: Editorial) => (
-              <TableRow key={editorial.id}>
+              <TableRow key={editorial.editorial_id}>
                 <TableCell component="th" scope="row">
-                  {editorial.id}
+                  {editorial.editorial_id}
                 </TableCell>
                 <TableCell align="left">{editorial.nombre}</TableCell>
                 <TableCell align="left">{editorial.direccion}</TableCell>
@@ -129,7 +129,7 @@ function EditorialesList() {
                     color="success"
                     aria-label="upload picture"
                     component="label"
-                    onClick={() => onIdClick(editorial.id)}
+                    onClick={() => onIdClick(editorial.editorial_id)}
                   >
                     <EditIcon />
                   </IconButton>
@@ -137,7 +137,9 @@ function EditorialesList() {
                     color="error"
                     aria-label="upload picture"
                     component="label"
-                    onClick={() => handleOpenModalConfirmacion(editorial.id)}
+                    onClick={() =>
+                      handleOpenModalConfirmacion(editorial.editorial_id)
+                    }
                   >
                     <DeleteIcon />
                   </IconButton>

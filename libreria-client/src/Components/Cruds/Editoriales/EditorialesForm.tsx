@@ -27,13 +27,13 @@ function EditorialesForm() {
 
   const [validForm, setValidForm] = useState<boolean>(false);
   const [editorial, setEditorial] = useState<Editorial>({
-    id: -1,
+    editorial_id: -1,
     nombre: "",
     url: "",
     direccion: "",
   });
   const [initialEditorial, setInitialEditorial] = useState<Editorial>({
-    id: -1,
+    editorial_id: -1,
     nombre: "",
     url: "",
     direccion: "",
@@ -104,6 +104,7 @@ function EditorialesForm() {
               setEditorial({ ...res });
               setInitialEditorial({ ...res });
             }
+            navigate("..");
           },
           error: (err) => {
             setOpenAlert({
@@ -111,6 +112,7 @@ function EditorialesForm() {
               type: "error",
               message: "No se pudo editar de forma satisfactoria",
             });
+            navigate("..");
           },
         });
         // servicio.updateMotoIndividual(Number.parseInt(id), moto);
@@ -131,6 +133,7 @@ function EditorialesForm() {
               type: "error",
               message: "No se pudo crear de forma satisfactoria",
             });
+            navigate("..");
           },
         });
       }
@@ -160,9 +163,9 @@ function EditorialesForm() {
         >
           <div className="form-controls">
             <h2>
-              {editorial.id == -1
+              {editorial.editorial_id == -1
                 ? `Nueva editorial`
-                : `Edición de la editorial ${editorial.id}`}
+                : `Edición de la editorial ${editorial.editorial_id}`}
             </h2>
             <div className="flex-row">
               <TextField

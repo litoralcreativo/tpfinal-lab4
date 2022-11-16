@@ -5,7 +5,7 @@ export interface EditorialDTO {
 }
 
 export interface Editorial {
-  id: number;
+  editorial_id: number;
   nombre: string;
   direccion?: string;
   url?: string;
