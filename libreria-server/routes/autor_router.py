@@ -25,16 +25,16 @@ def get_by_id(id_autor:int, db:Session = Depends(get_db)):
     else:
         return result
 
-@autor_router.post('',response_model=AutorDTO, status_code= status.HTTP_201_CREATED)
-def new_autor(datos:AutorDTO, db:Session = Depends(get_db)):
+@autor_router.post('',response_model=AutorNoId, status_code= status.HTTP_201_CREATED)
+def new_autor(datos:AutorNoId, db:Session = Depends(get_db)):
     try:
         result: AutorDTO = autor_controller.new_autor(db,datos)
-        return result
+        return resultA
     except:
         raise HTTPException(status_code = status.HTTP_400_BAD_REQUEST, detail = 'No se pudo crear el Autor, revise los atributos')
 
     
-@autor_router.put('/{dni}',response_model=AutorDTO)
+@autor_router.put('/{id_autor}',response_model=AutorForUpdate)
 def update_autor(datos:AutorForUpdate,id_autor:int,db:Session = Depends(get_db)):
     try:
         result: AutorDTO = autor_controller.update_autor(db,datos,id_autor)

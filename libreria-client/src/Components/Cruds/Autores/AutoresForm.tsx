@@ -34,12 +34,14 @@ function AutoresForm() {
 
   const [validForm, setValidForm] = useState<boolean>(false);
   const [autor, setAutor] = useState<Autor>({
-    dni: -1,
+    id_autor: -1,
+    dni: undefined,
     nombre: "",
     apellido: "",
   });
   const [initialAutor, setInitialAutor] = useState<Autor>({
-    dni: -1,
+    id_autor: -1,
+    dni: undefined,
     nombre: "",
     apellido: "",
   });
@@ -167,9 +169,9 @@ function AutoresForm() {
         <Box component="form" noValidate autoComplete="off">
           <div className="form-controls">
             <h2>
-              {autor.dni == -1
+              {autor.id_autor == -1
                 ? `Nuevo autor`
-                : `Edición del autor ${autor.dni}`}
+                : `Edición del autor ${autor.id_autor}`}
             </h2>
             <div className="flex-row">
               <TextField

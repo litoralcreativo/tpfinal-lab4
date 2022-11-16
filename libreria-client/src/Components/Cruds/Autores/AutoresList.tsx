@@ -122,7 +122,8 @@ function AutoresList() {
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Dni</TableCell>
+              <TableCell>Id</TableCell>
+              <TableCell align="left">Dni</TableCell>
               <TableCell align="left">Nombre</TableCell>
               <TableCell align="left">Apellido</TableCell>
               <TableCell align="right">Acciones</TableCell>
@@ -130,10 +131,11 @@ function AutoresList() {
           </TableHead>
           <TableBody>
             {datos.map((autor: Autor) => (
-              <TableRow key={autor.dni}>
+              <TableRow key={autor.id_autor}>
                 <TableCell component="th" scope="row">
-                  {autor.dni}
+                  {autor.id_autor}
                 </TableCell>
+                <TableCell align="left">{autor.dni}</TableCell>
                 <TableCell align="left">{autor.nombre}</TableCell>
                 <TableCell align="left">{autor.apellido}</TableCell>
                 <TableCell align="right">
@@ -141,7 +143,7 @@ function AutoresList() {
                     color="success"
                     aria-label="upload picture"
                     component="label"
-                    onClick={() => onIdClick(autor.dni)}
+                    onClick={() => onIdClick(autor.id_autor)}
                   >
                     <EditIcon />
                   </IconButton>
@@ -149,7 +151,7 @@ function AutoresList() {
                     color="error"
                     aria-label="upload picture"
                     component="label"
-                    onClick={() => handleOpenModalConfirmacion(autor.dni)}
+                    onClick={() => handleOpenModalConfirmacion(autor.id_autor)}
                   >
                     <DeleteIcon />
                   </IconButton>

@@ -21,7 +21,7 @@ function Cruds() {
         <Tabs value={value} onChange={handleChange} aria-label="main tabs">
           <Tab label="Libros" value={"libros"} disabled />
           <Tab label="Editoriales" value={"editoriales"} />
-          <Tab label="Autores" value={"autores"} disabled />
+          <Tab label="Autores" value={"autores"} />
           <Tab label="Temas" value={"temas"} />
           <Tab label="Formatos" value={"formatos"} />
         </Tabs>
