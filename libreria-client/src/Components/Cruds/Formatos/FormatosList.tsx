@@ -6,6 +6,7 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
+  LinearProgress,
   Paper,
   Table,
   TableBody,
@@ -19,19 +20,18 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
-import LinearProgress from "@mui/material/LinearProgress";
-
 import { useNavigate } from "react-router-dom";
 
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertColor, AlertProps } from "@mui/material/Alert";
 import EditorialService from "../../../Services/editoriales.service";
-import { Editorial } from "../../../Models/Editorial.model";
+import FormatoService from "../../../Services/formatos.service";
+import { Formato } from "../../../Models/Formato.model";
 
-function EditorialesList() {
+function FormatosList() {
   let navigate = useNavigate();
   const [fetching, setFetching] = useState(false);
-  const [datos, setDatos] = useState<Editorial[]>([]);
+  const [datos, setDatos] = useState<Formato[]>([]);
   const [openModal, setOpenModal] = useState(false);
   const [openAlert, setOpenAlert] = useState<{
     state: boolean;
@@ -46,7 +46,7 @@ function EditorialesList() {
 
   useEffect(() => {
     setFetching(true);
-    EditorialService.getEditoriales().subscribe((res) => {
+    FormatoService.getFormatos().subscribe((res) => {
       setDatos(res);
       setFetching(false);
     });
@@ -69,7 +69,7 @@ function EditorialesList() {
   const handleCloseModalConfirmacion = (result: boolean) => {
     if (result) {
       if (idToDelete) {
-        EditorialService.bajaEditorialIndividual(idToDelete).subscribe({
+        FormatoService.bajaFormatoIndividual(idToDelete).subscribe({
           next: (res) => {
             setOpenAlert({
               state: true,
@@ -115,30 +115,22 @@ function EditorialesList() {
             <TableRow>
               <TableCell>Id</TableCell>
               <TableCell align="left">Nombre</TableCell>
-              <TableCell align="left">Dirección</TableCell>
-              <TableCell align="left">URL</TableCell>
               <TableCell align="right">Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {datos.map((editorial: Editorial) => (
-              <TableRow key={editorial.editorial_id}>
+            {datos.map((editorial: Formato) => (
+              <TableRow key={editorial.formato_id}>
                 <TableCell component="th" scope="row">
-                  {editorial.editorial_id}
+                  {editorial.formato_id}
                 </TableCell>
                 <TableCell align="left">{editorial.nombre}</TableCell>
-                <TableCell align="left">{editorial.direccion}</TableCell>
-                <TableCell align="left">
-                  <a href={editorial.url} target="_blank">
-                    {editorial.url}
-                  </a>
-                </TableCell>
                 <TableCell align="right">
                   <IconButton
                     color="success"
                     aria-label="upload picture"
                     component="label"
-                    onClick={() => onIdClick(editorial.editorial_id)}
+                    onClick={() => onIdClick(editorial.formato_id)}
                   >
                     <EditIcon />
                   </IconButton>
@@ -147,7 +139,7 @@ function EditorialesList() {
                     aria-label="upload picture"
                     component="label"
                     onClick={() =>
-                      handleOpenModalConfirmacion(editorial.editorial_id)
+                      handleOpenModalConfirmacion(editorial.formato_id)
                     }
                   >
                     <DeleteIcon />
@@ -167,7 +159,7 @@ function EditorialesList() {
         <DialogTitle id="alert-dialog-title">{"Confirmación"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Esta seguro que desea eliminar esta editorial?
+            Esta seguro que desea eliminar este formato?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -214,4 +206,4 @@ function EditorialesList() {
   );
 }
 
-export default EditorialesList;
+export default FormatosList;

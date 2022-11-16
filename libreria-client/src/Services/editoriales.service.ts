@@ -1,7 +1,7 @@
 import axios from "axios";
 import { from, map, Observable, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
-import { Editorial, EditorialDTO } from "../Models/Editorial.model";
+import { Editorial } from "../Models/Editorial.model";
 
 const editoriales: Editorial[] = [
   {

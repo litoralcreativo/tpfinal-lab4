@@ -21,26 +21,23 @@ import { useNavigate, useParams } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertColor, AlertProps } from "@mui/material/Alert";
-import { Editorial } from "../../../Models/Editorial.model";
-import EditorialService from "../../../Services/editoriales.service";
+import { Formato } from "../../../Models/Formato.model";
+import FormatoService from "../../../Services/formatos.service";
+import { timer } from "rxjs";
 
-function EditorialesForm() {
+function FormatosForm() {
   let navigate = useNavigate();
   const [fetching, setFetching] = useState(false);
   const { id } = useParams();
 
   const [validForm, setValidForm] = useState<boolean>(false);
-  const [editorial, setEditorial] = useState<Editorial>({
-    editorial_id: -1,
+  const [formato, setFormato] = useState<Formato>({
+    formato_id: -1,
     nombre: "",
-    url: "",
-    direccion: "",
   });
-  const [initialEditorial, setInitialEditorial] = useState<Editorial>({
-    editorial_id: -1,
+  const [initialFormato, setInitialFormato] = useState<Formato>({
+    formato_id: -1,
     nombre: "",
-    url: "",
-    direccion: "",
   });
   const [openAlert, setOpenAlert] = useState<{
     state: boolean;
@@ -55,13 +52,13 @@ function EditorialesForm() {
   useEffect(() => {
     if (id) {
       setFetching(true);
-      EditorialService.getEditorialIndividual(Number.parseInt(id))
+      FormatoService.getFormatoIndividual(Number.parseInt(id))
         .subscribe({
           next: (res) => {
-            const editorialFetched = res;
-            if (editorialFetched) {
-              setEditorial({ ...editorialFetched });
-              setInitialEditorial({ ...editorialFetched });
+            const formatoFetched = res;
+            if (formatoFetched) {
+              setFormato({ ...formatoFetched });
+              setInitialFormato({ ...formatoFetched });
             }
           },
         })
@@ -76,22 +73,17 @@ function EditorialesForm() {
     let res = true;
 
     /* required */
-    if (editorial.nombre == "") return false;
+    if (formato.nombre == "") return false;
 
     /* different */
-    if (
-      editorial.nombre == initialEditorial.nombre &&
-      editorial.direccion == initialEditorial.direccion &&
-      editorial.url == initialEditorial.url
-    )
-      return false;
+    if (formato.nombre == initialFormato.nombre) return false;
     return res;
   };
 
   useEffect(() => {
     setValidForm(checkValues());
     return () => {};
-  }, [editorial]);
+  }, [formato]);
 
   const [openModal, setOpenModal] = useState(false);
 
@@ -99,10 +91,7 @@ function EditorialesForm() {
     if (result) {
       /* edicion */
       if (id) {
-        EditorialService.updateEditorialIndividual(
-          Number.parseInt(id),
-          editorial
-        )
+        FormatoService.updateFormatoIndividual(Number.parseInt(id), formato)
           .subscribe({
             next: (res) => {
               setOpenAlert({
@@ -111,8 +100,8 @@ function EditorialesForm() {
                 message: "Se pudo editar satisfactoriamente",
               });
               if (res) {
-                setEditorial({ ...res });
-                setInitialEditorial({ ...res });
+                setFormato({ ...res });
+                setInitialFormato({ ...res });
               }
             },
             error: (err) => {
@@ -128,10 +117,9 @@ function EditorialesForm() {
               navigate("..");
             }, 1000);
           });
-        // servicio.updateMotoIndividual(Number.parseInt(id), moto);
       } else {
         /* alta */
-        EditorialService.altaEditorialIndividual(editorial)
+        FormatoService.altaFormatoIndividual(formato)
           .subscribe({
             next: (res) => {
               setOpenAlert({
@@ -170,9 +158,9 @@ function EditorialesForm() {
         <Box component="form" noValidate autoComplete="off">
           <div className="form-controls">
             <h2>
-              {editorial.editorial_id == -1
-                ? `Nueva editorial`
-                : `Edición de la editorial ${editorial.editorial_id}`}
+              {formato.formato_id == -1
+                ? `Nuevo formato`
+                : `Edición del formato ${formato.formato_id}`}
             </h2>
             <div className="flex-row">
               <TextField
@@ -181,29 +169,9 @@ function EditorialesForm() {
                 id="nombre"
                 label="Nombre"
                 onChange={(event) =>
-                  setEditorial({ ...editorial, nombre: event.target.value })
+                  setFormato({ ...formato, nombre: event.target.value })
                 }
-                value={editorial?.nombre}
-              />
-              <TextField
-                disabled={fetching}
-                type="text"
-                id="direccion"
-                label="Dirección"
-                onChange={(event) =>
-                  setEditorial({ ...editorial, direccion: event.target.value })
-                }
-                value={editorial?.direccion}
-              />
-              <TextField
-                disabled={fetching}
-                type="text"
-                id="url"
-                label="Url"
-                onChange={(event) =>
-                  setEditorial({ ...editorial, url: event.target.value })
-                }
-                value={editorial?.url}
+                value={formato?.nombre}
               />
             </div>
             <div
@@ -283,4 +251,4 @@ function EditorialesForm() {
   );
 }
 
-export default EditorialesForm;
+export default FormatosForm;

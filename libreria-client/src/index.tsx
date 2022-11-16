@@ -17,6 +17,9 @@ import Editoriales from "./Components/Cruds/Editoriales/Editoriales";
 import EditorialesList from "./Components/Cruds/Editoriales/EditorialesList";
 import EditorialesForm from "./Components/Cruds/Editoriales/EditorialesForm";
 import About from "./Components/About/About";
+import Formatos from "./Components/Cruds/Formatos/Formatos";
+import FormatosList from "./Components/Cruds/Formatos/FormatosList";
+import FormatosForm from "./Components/Cruds/Formatos/FormatosForm";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -33,16 +36,11 @@ root.render(
             <Route path=":id" element={<EditorialesForm />} />
             <Route path="alta" element={<EditorialesForm />} />
           </Route>
-          {/* <Route path="motos" element={<Motos />}>
-            <Route path="" element={<MotosList />} />
-            <Route path=":id" element={<MotosForm />} />
-            <Route path="alta" element={<MotosForm />} />
+          <Route path="formatos" element={<Formatos />}>
+            <Route path="" element={<FormatosList />} />
+            <Route path=":id" element={<FormatosForm />} />
+            <Route path="alta" element={<FormatosForm />} />
           </Route>
-          <Route path="bicis" element={<Bicis />}>
-            <Route path="" element={<BicisList />} />
-            <Route path=":id" element={<BicisForm />} />
-            <Route path="alta" element={<BicisForm />} />
-          </Route> */}
         </Route>
         <Route path="about" element={<About />} />
       </Route>
