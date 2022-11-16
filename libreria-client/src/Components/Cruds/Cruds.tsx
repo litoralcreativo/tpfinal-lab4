@@ -22,7 +22,7 @@ function Cruds() {
           <Tab label="Libros" value={"libros"} disabled />
           <Tab label="Editoriales" value={"editoriales"} />
           <Tab label="Autores" value={"autores"} disabled />
-          <Tab label="Temas" value={"temas"} disabled />
+          <Tab label="Temas" value={"temas"} />
           <Tab label="Formatos" value={"formatos"} />
         </Tabs>
       </Box>
