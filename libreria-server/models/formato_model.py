@@ -7,3 +7,6 @@ class Formato(BaseBd):
     formato_id = Column(Integer, primary_key=True)
     nombre = Column(String(255), nullable=False)
     relationship('Libro')#cascade('all,delete')
+
+    def __repr__(self) -> str:
+        return f'<Formato> ID: {self.formato_id}; Nombre: {self.nombre}'

@@ -29,8 +29,9 @@ def new_editorial(datos:EditorialNoId, db:Session = Depends(get_db)):
     try:
         result: EditorialDTO = editorial_controller.new_editorial(db,datos)
         return result
-    except:
-        raise HTTPException(status_code = status.HTTP_400_BAD_REQUEST, detail = 'No se pudo crear la editorial, revise los atributos')
+    except Exception as e:
+        exception_msg = f'Type: {type(e)}. Args: {e.args}. {e}'
+        raise HTTPException(status_code = status.HTTP_400_BAD_REQUEST, detail = f'No se pudo crear la editorial, revise los atributos. {exception_msg}')
 
     
 @editorial_router.put('/{id}',response_model=EditorialDTO)

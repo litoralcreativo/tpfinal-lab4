@@ -8,4 +8,7 @@ class Editorial(BaseBd):
     nombre = Column(String(255), nullable=False)
     direccion = Column(String(255))
     url = Column(String(255))
-    relationship("Libro")#cascade('all,delete')
+    relationship("Libro")
+
+    def __repr__(self) -> str:
+        return f'<Editorial> ID:{self.editorial_id}; Nombre: {self.nombre}; Direccion: {self.direccion}; URL: {self.url}'
