@@ -10,7 +10,7 @@ function App() {
           <NavLink to="/" style={{ textDecoration: "none" }}>
             <Button variant="contained">Home</Button>
           </NavLink>
-          <Link to="/datos" style={{ textDecoration: "none" }}>
+          <Link to="/libreria" style={{ textDecoration: "none" }}>
             <Button variant="text">Librería</Button>
           </Link>
           <Link to="/about" style={{ textDecoration: "none" }}>

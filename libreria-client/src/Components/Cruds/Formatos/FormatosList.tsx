@@ -46,10 +46,20 @@ function FormatosList() {
 
   useEffect(() => {
     setFetching(true);
-    FormatoService.getFormatos().subscribe((res) => {
-      setDatos(res);
-      setFetching(false);
-    });
+    FormatoService.getFormatos()
+      .subscribe({
+        next: (res) => {
+          setDatos(res);
+        },
+        error: (err) => {
+          setOpenAlert({
+            state: true,
+            type: "error",
+            message: `No se pudieron obtener los datos`,
+          });
+        },
+      })
+      .add(() => setFetching(false));
     return () => {};
   }, [idToDelete]);
 

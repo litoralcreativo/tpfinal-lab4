@@ -27,6 +27,7 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertColor, AlertProps } from "@mui/material/Alert";
 import EditorialService from "../../../Services/editoriales.service";
 import { Editorial } from "../../../Models/Editorial.model";
+import { AjaxError } from "rxjs/ajax";
 
 function EditorialesList() {
   let navigate = useNavigate();
@@ -46,10 +47,20 @@ function EditorialesList() {
 
   useEffect(() => {
     setFetching(true);
-    EditorialService.getEditoriales().subscribe((res) => {
-      setDatos(res);
-      setFetching(false);
-    });
+    EditorialService.getEditoriales()
+      .subscribe({
+        next: (res) => {
+          setDatos(res);
+        },
+        error: (err) => {
+          setOpenAlert({
+            state: true,
+            type: "error",
+            message: `No se pudieron obtener los datos`,
+          });
+        },
+      })
+      .add(() => setFetching(false));
     return () => {};
   }, [idToDelete]);
 

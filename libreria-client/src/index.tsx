@@ -12,7 +12,7 @@ import "./index.css";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 
-import Datos from "./Components/Cruds/Cruds";
+import Cruds from "./Components/Cruds/Cruds";
 import Editoriales from "./Components/Cruds/Editoriales/Editoriales";
 import EditorialesList from "./Components/Cruds/Editoriales/EditorialesList";
 import EditorialesForm from "./Components/Cruds/Editoriales/EditorialesForm";
@@ -30,7 +30,7 @@ root.render(
       <Route path="/" element={<App />}>
         <Route path="/" element={<Home />} />
         <Route path="home" element={<Home />} />
-        <Route path="datos" element={<Datos />}>
+        <Route path="libreria" element={<Cruds />}>
           <Route path="editoriales" element={<Editoriales />}>
             <Route path="" element={<EditorialesList />} />
             <Route path=":id" element={<EditorialesForm />} />

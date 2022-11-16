@@ -28,6 +28,7 @@ Se deben poder realizar las siguientes consultas:
 - libros que contengan un determinado tema
 
 Acorde a lo que dimos en clase, las tecnologías a usar son las siguientes:
-**Backend**: FastAPI
-**Frontend**: React
-**BD**: PostgreSql
+
+- **Backend**: FastAPI
+- **Frontend**: React
+- **BD**: PostgreSql
