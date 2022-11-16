@@ -12,7 +12,6 @@ class LibroController:
 
     def get_all(self,db:Session):
         result = db.execute(select(Libro).order_by(Libro.isbn)).scalars().all()
-        print(result[0])
         return result
 
     def new_libro(self,db:Session,datos:LibroBase):
@@ -24,8 +23,8 @@ class LibroController:
             formato_id=datos.formato_id,
             isbn=datos.isbn
         )
-        for autores_dni in datos.autor_dni:
-            autor = autor_controller.get_by_id(db,autores_dni)
+        for autores_id in datos.autor_id:
+            autor = autor_controller.get_by_id(db,autores_id)
             nuevo_libro.autores.append(autor)
 
         for temas_id in datos.temas_id:
@@ -34,7 +33,7 @@ class LibroController:
 
         db.add(nuevo_libro)
         db.commit()
-        result = db.execute(select(Libro).order_by(desc(Libro.isbn))).scalars().first()
+        result = db.execute(select(Libro).where(Libro.isbn == datos.isbn)).scalars().first()
         return result
 
     def get_by_isbn(self,db:Session,isbn:int):
@@ -53,8 +52,8 @@ class LibroController:
             libro_buscado.editorial_id = datos.editorial_id if datos.editorial_id is not None else libro_buscado.editorial_id
             libro_buscado.formato_id = datos.formato_id if datos.formato_id is not None else libro_buscado.formato.id
 
-        for autores_dni in datos.autor_dni:
-            autor = autor_controller.get_by_id(db,autores_dni)
+        for autores_id in datos.autor_id:
+            autor = autor_controller.get_by_id(db,autores_id)
             libro_buscado.autores.append(autor)
 
         for temas_id in datos.temas_id:

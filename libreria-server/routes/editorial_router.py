@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from config.db import get_db
 from sqlalchemy.orm import Session
 from controllers.editorial_controller import EditorialController
-from schemas.editorial_schemas import EditorialDTO, EditorialNoId
+from schemas.editorial_schemas import EditorialDTO, EditorialNoId, EditorialForUpdate
 from starlette import status
 
 editorial_router =  APIRouter(prefix='/editoriales',tags=['Editoriales'])
@@ -35,7 +35,7 @@ def new_editorial(datos:EditorialNoId, db:Session = Depends(get_db)):
 
     
 @editorial_router.put('/{id}',response_model=EditorialDTO)
-def update_editorial(datos:EditorialNoId,id:int,db:Session = Depends(get_db)):
+def update_editorial(datos:EditorialForUpdate,id:int,db:Session = Depends(get_db)):
     try:
         result: EditorialDTO = editorial_controller.update_editorial(db,datos,id)
         if result is None:

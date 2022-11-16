@@ -13,7 +13,7 @@ tema_libro = Table(
 autor_libro = Table(
     "autores_libros",
     BaseBd.metadata,
-    Column("autor_dni", ForeignKey("autor.dni"), primary_key=True),
+    Column("autor_id", ForeignKey("autor.id_autor"), primary_key=True),
     Column("libro_isbn", ForeignKey("libro.isbn"), primary_key=True)
 )
 

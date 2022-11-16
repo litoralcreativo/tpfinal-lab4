@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select,desc
 from models.formato_model import Formato
-from schemas.formato_schemas import FormatoNoId
+from schemas.formato_schemas import FormatoNoId,FormatoForUpdate
 
 class FormatoController:
     def get_all(self,db:Session):
@@ -17,7 +17,7 @@ class FormatoController:
         db.commit()
         return db.execute(select(Formato).order_by(desc(Formato.formato_id))).scalars().first()
 
-    def update_formato(self,db:Session,datos:FormatoNoId,id:int):
+    def update_formato(self,db:Session,datos:FormatoForUpdate,id:int):
         formato = self.get_by_id(db,id)
         if formato is None:
             return None
