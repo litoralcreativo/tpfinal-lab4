@@ -1,10 +1,20 @@
 import axios from "axios";
 import { from, map, Observable, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
-import { Autor } from "../Models/Autor.model";
+import { Autor, AutorDTO } from "../Models/Autor.model";
 
 class AutorService {
   constructor() {}
+
+  /**
+   * Mapea la entidad al dto
+   * @param {Autor} autor con id y dni numerico
+   * @returns dto con dni del tipo string
+   */
+  static parseToAutor = (autor: Autor): AutorDTO => {
+    let res = { ...autor, dni: autor.dni.toString() };
+    return res;
+  };
 
   /**
    * GET que consulta los autores
@@ -33,7 +43,7 @@ class AutorService {
    * @param {Autor} newValue autor con valores modificados
    * @returns observable del autor editado
    */
-  static updateSingle = (id: number, newValue: Autor): Observable<Autor> => {
+  static updateSingle = (id: number, newValue: AutorDTO): Observable<Autor> => {
     return ajax
       .put<Autor>(`http://localhost:8000/autores/${id}`, newValue)
       .pipe(map((x) => x.response));
@@ -44,7 +54,7 @@ class AutorService {
    * @param {Autor} newValue autor a ser insertado
    * @returns observable del autor insertado
    */
-  static createSingle = (newValue: Autor): Observable<Autor> => {
+  static createSingle = (newValue: AutorDTO): Observable<Autor> => {
     return ajax
       .post<Autor>(`http://localhost:8000/autores`, newValue)
       .pipe(map((x) => x.response));

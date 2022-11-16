@@ -29,7 +29,7 @@ def get_by_id(id_autor:int, db:Session = Depends(get_db)):
 def new_autor(datos:AutorNoId, db:Session = Depends(get_db)):
     try:
         result: AutorDTO = autor_controller.new_autor(db,datos)
-        return resultA
+        return result
     except:
         raise HTTPException(status_code = status.HTTP_400_BAD_REQUEST, detail = 'No se pudo crear el Autor, revise los atributos')
 
