@@ -12,11 +12,14 @@ import "./index.css";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 
-import Datos from "./Components/Datos/Datos";
-import Editoriales from "./Components/Datos/Editoriales/Editoriales";
-import EditorialesList from "./Components/Datos/Editoriales/EditorialesList";
-import EditorialesForm from "./Components/Datos/Editoriales/EditorialesForm";
+import Cruds from "./Components/Cruds/Cruds";
+import Editoriales from "./Components/Cruds/Editoriales/Editoriales";
+import EditorialesList from "./Components/Cruds/Editoriales/EditorialesList";
+import EditorialesForm from "./Components/Cruds/Editoriales/EditorialesForm";
 import About from "./Components/About/About";
+import Formatos from "./Components/Cruds/Formatos/Formatos";
+import FormatosList from "./Components/Cruds/Formatos/FormatosList";
+import FormatosForm from "./Components/Cruds/Formatos/FormatosForm";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -27,22 +30,17 @@ root.render(
       <Route path="/" element={<App />}>
         <Route path="/" element={<Home />} />
         <Route path="home" element={<Home />} />
-        <Route path="datos" element={<Datos />}>
+        <Route path="libreria" element={<Cruds />}>
           <Route path="editoriales" element={<Editoriales />}>
             <Route path="" element={<EditorialesList />} />
             <Route path=":id" element={<EditorialesForm />} />
             <Route path="alta" element={<EditorialesForm />} />
           </Route>
-          {/* <Route path="motos" element={<Motos />}>
-            <Route path="" element={<MotosList />} />
-            <Route path=":id" element={<MotosForm />} />
-            <Route path="alta" element={<MotosForm />} />
+          <Route path="formatos" element={<Formatos />}>
+            <Route path="" element={<FormatosList />} />
+            <Route path=":id" element={<FormatosForm />} />
+            <Route path="alta" element={<FormatosForm />} />
           </Route>
-          <Route path="bicis" element={<Bicis />}>
-            <Route path="" element={<BicisList />} />
-            <Route path=":id" element={<BicisForm />} />
-            <Route path="alta" element={<BicisForm />} />
-          </Route> */}
         </Route>
         <Route path="about" element={<About />} />
       </Route>

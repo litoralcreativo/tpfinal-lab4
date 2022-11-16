@@ -1,16 +1,17 @@
 import axios from "axios";
-import { from, Observable, of } from "rxjs";
-import { Editorial, EditorialDTO } from "../Models/Editorial.model";
+import { from, map, Observable, of } from "rxjs";
+import { ajax } from "rxjs/ajax";
+import { Editorial } from "../Models/Editorial.model";
 
 const editoriales: Editorial[] = [
   {
-    id: 1,
+    editorial_id: 1,
     nombre: "Atlantida",
     url: "https://atlantida.com.ar/",
     direccion: "Elcano 3847, CABA",
   },
   {
-    id: 2,
+    editorial_id: 2,
     nombre: "AZ",
     url: "http://az.com.ar/",
     direccion: "Montenegro 1335, CABA",
@@ -20,46 +21,63 @@ const editoriales: Editorial[] = [
 class EditorialService {
   constructor() {}
 
+  /**
+   * GET que consulta las editoriales
+   * @returns observable de todas las editoriales
+   */
   static getEditoriales = (): Observable<Editorial[]> => {
-    return of(editoriales);
-    // return axios.get("http://localhost:8080/api/autos");
+    return ajax
+      .get<Editorial[]>("http://localhost:8000/editoriales")
+      .pipe(map((x) => x.response));
   };
-  static getEditorialIndividual = (
-    id: number
-  ): Observable<Editorial | undefined> => {
-    return of(editoriales.find((x) => x.id == id));
-    // return axios.get(`http://localhost:8080/api/autos/${id}`);
+
+  /**
+   * GET que consulta una editorial particular
+   * @param id identificador de la editorial
+   * @returns observable de la editorial buscada
+   */
+  static getEditorialIndividual = (id: number): Observable<Editorial> => {
+    return ajax
+      .get<Editorial>(`http://localhost:8000/editoriales/${id}`)
+      .pipe(map((x) => x.response));
   };
+
+  /**
+   * PUT que modifica una editorial
+   * @param id identificador de la editorial a ser editada
+   * @param {Editorial} newValue editorial con valores modificados
+   * @returns observable de la editorial editada
+   */
   static updateEditorialIndividual = (
     id: number,
     newValue: Editorial
-  ): Observable<Editorial | undefined> => {
-    let toEdit = editoriales.find((x) => x.id == id);
-    if (toEdit) {
-      toEdit.nombre = newValue.nombre;
-      toEdit.url = newValue.url;
-      toEdit.direccion = newValue.direccion;
-    }
-    return of(toEdit);
-    // return axios.put(`http://localhost:8080/api/autos/${id}`, newValue);
+  ): Observable<Editorial> => {
+    return ajax
+      .put<Editorial>(`http://localhost:8000/editoriales/${id}`, newValue)
+      .pipe(map((x) => x.response));
   };
+
+  /**
+   * POST que inserta una editorial
+   * @param {Editorial} newValue editorial a ser insertada
+   * @returns observable editorial insertada
+   */
   static altaEditorialIndividual = (
     newValue: Editorial
   ): Observable<Editorial> => {
-    let newPushed = editoriales.push({
-      ...newValue,
-      id: Math.max(...editoriales.map((x) => x.id)) + 1,
-    });
-    return of(editoriales[newPushed]);
-    // return axios.put(`http://localhost:8080/api/autos/${id}`, newValue);
+    return ajax
+      .post<Editorial>(`http://localhost:8000/editoriales`, newValue)
+      .pipe(map((x) => x.response));
   };
-  static bajaEditorialIndividual = (id: number): Observable<Editorial[]> => {
-    editoriales.splice(
-      editoriales.findIndex((x) => x.id == id),
-      1
-    );
-    return of(editoriales);
-    // return axios.delete(`http://localhost:8080/api/autos/${id}`);
+
+  /**
+   * DELETE que elimina una editorial
+   * @param id identificador de la editorial a ser eliminada
+   */
+  static bajaEditorialIndividual = (id: number): Observable<any> => {
+    return ajax
+      .delete<any>(`http://localhost:8000/editoriales/${id}`)
+      .pipe(map((x) => x.response));
   };
 }
 

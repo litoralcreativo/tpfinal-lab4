@@ -6,6 +6,7 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
+  LinearProgress,
   Paper,
   Table,
   TableBody,
@@ -24,11 +25,13 @@ import { useNavigate } from "react-router-dom";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertColor, AlertProps } from "@mui/material/Alert";
 import EditorialService from "../../../Services/editoriales.service";
-import { Editorial } from "../../../Models/Editorial.model";
+import FormatoService from "../../../Services/formatos.service";
+import { Formato } from "../../../Models/Formato.model";
 
-function EditorialesList() {
+function FormatosList() {
   let navigate = useNavigate();
-  const [datos, setDatos] = useState<Editorial[]>([]);
+  const [fetching, setFetching] = useState(false);
+  const [datos, setDatos] = useState<Formato[]>([]);
   const [openModal, setOpenModal] = useState(false);
   const [openAlert, setOpenAlert] = useState<{
     state: boolean;
@@ -42,9 +45,21 @@ function EditorialesList() {
   const [idToDelete, setIdToDelete] = useState<number | null>(null);
 
   useEffect(() => {
-    EditorialService.getEditoriales().subscribe((res) => {
-      setDatos(res);
-    });
+    setFetching(true);
+    FormatoService.getFormatos()
+      .subscribe({
+        next: (res) => {
+          setDatos(res);
+        },
+        error: (err) => {
+          setOpenAlert({
+            state: true,
+            type: "error",
+            message: `No se pudieron obtener los datos`,
+          });
+        },
+      })
+      .add(() => setFetching(false));
     return () => {};
   }, [idToDelete]);
 
@@ -64,7 +79,7 @@ function EditorialesList() {
   const handleCloseModalConfirmacion = (result: boolean) => {
     if (result) {
       if (idToDelete) {
-        EditorialService.bajaEditorialIndividual(idToDelete).subscribe({
+        FormatoService.bajaFormatoIndividual(idToDelete).subscribe({
           next: (res) => {
             setOpenAlert({
               state: true,
@@ -101,35 +116,31 @@ function EditorialesList() {
         Agregar
       </Button>
       <TableContainer component={Paper}>
+        <LinearProgress
+          variant={fetching ? "indeterminate" : "determinate"}
+          value={0}
+        />
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell>Id</TableCell>
               <TableCell align="left">Nombre</TableCell>
-              <TableCell align="left">Dirección</TableCell>
-              <TableCell align="left">URL</TableCell>
               <TableCell align="right">Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {datos.map((editorial: Editorial) => (
-              <TableRow key={editorial.id}>
+            {datos.map((editorial: Formato) => (
+              <TableRow key={editorial.formato_id}>
                 <TableCell component="th" scope="row">
-                  {editorial.id}
+                  {editorial.formato_id}
                 </TableCell>
                 <TableCell align="left">{editorial.nombre}</TableCell>
-                <TableCell align="left">{editorial.direccion}</TableCell>
-                <TableCell align="left">
-                  <a href={editorial.url} target="_blank">
-                    {editorial.url}
-                  </a>
-                </TableCell>
                 <TableCell align="right">
                   <IconButton
                     color="success"
                     aria-label="upload picture"
                     component="label"
-                    onClick={() => onIdClick(editorial.id)}
+                    onClick={() => onIdClick(editorial.formato_id)}
                   >
                     <EditIcon />
                   </IconButton>
@@ -137,7 +148,9 @@ function EditorialesList() {
                     color="error"
                     aria-label="upload picture"
                     component="label"
-                    onClick={() => handleOpenModalConfirmacion(editorial.id)}
+                    onClick={() =>
+                      handleOpenModalConfirmacion(editorial.formato_id)
+                    }
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -156,7 +169,7 @@ function EditorialesList() {
         <DialogTitle id="alert-dialog-title">{"Confirmación"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Esta seguro que desea eliminar esta editorial?
+            Esta seguro que desea eliminar este formato?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -203,4 +216,4 @@ function EditorialesList() {
   );
 }
 
-export default EditorialesList;
+export default FormatosList;

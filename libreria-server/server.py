@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from config.db import create_all
 # routers
 from routes.editorial_router import editorial_router
@@ -16,6 +17,13 @@ from models.tema_model import Tema
 from models.libro_model import Libro
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Para crear las entidades
 create_all()

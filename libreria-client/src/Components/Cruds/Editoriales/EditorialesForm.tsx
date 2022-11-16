@@ -10,7 +10,10 @@ import {
   FormControl,
   FormLabel,
   IconButton,
+  LinearProgress,
+  Paper,
   Slider,
+  TableContainer,
   TextField,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
@@ -23,17 +26,18 @@ import EditorialService from "../../../Services/editoriales.service";
 
 function EditorialesForm() {
   let navigate = useNavigate();
+  const [fetching, setFetching] = useState(false);
   const { id } = useParams();
 
   const [validForm, setValidForm] = useState<boolean>(false);
   const [editorial, setEditorial] = useState<Editorial>({
-    id: -1,
+    editorial_id: -1,
     nombre: "",
     url: "",
     direccion: "",
   });
   const [initialEditorial, setInitialEditorial] = useState<Editorial>({
-    id: -1,
+    editorial_id: -1,
     nombre: "",
     url: "",
     direccion: "",
@@ -50,15 +54,20 @@ function EditorialesForm() {
 
   useEffect(() => {
     if (id) {
-      EditorialService.getEditorialIndividual(Number.parseInt(id)).subscribe({
-        next: (res) => {
-          const editorialFetched = res;
-          if (editorialFetched) {
-            setEditorial({ ...editorialFetched });
-            setInitialEditorial({ ...editorialFetched });
-          }
-        },
-      });
+      setFetching(true);
+      EditorialService.getEditorialIndividual(Number.parseInt(id))
+        .subscribe({
+          next: (res) => {
+            const editorialFetched = res;
+            if (editorialFetched) {
+              setEditorial({ ...editorialFetched });
+              setInitialEditorial({ ...editorialFetched });
+            }
+          },
+        })
+        .add(() => {
+          setFetching(false);
+        });
     }
     return () => {};
   }, [id]);
@@ -93,46 +102,57 @@ function EditorialesForm() {
         EditorialService.updateEditorialIndividual(
           Number.parseInt(id),
           editorial
-        ).subscribe({
-          next: (res) => {
-            setOpenAlert({
-              state: true,
-              type: "success",
-              message: "Se pudo editar satisfactoriamente",
-            });
-            if (res) {
-              setEditorial({ ...res });
-              setInitialEditorial({ ...res });
-            }
-          },
-          error: (err) => {
-            setOpenAlert({
-              state: true,
-              type: "error",
-              message: "No se pudo editar de forma satisfactoria",
-            });
-          },
-        });
+        )
+          .subscribe({
+            next: (res) => {
+              setOpenAlert({
+                state: true,
+                type: "success",
+                message: "Se pudo editar satisfactoriamente",
+              });
+              if (res) {
+                setEditorial({ ...res });
+                setInitialEditorial({ ...res });
+              }
+            },
+            error: (err) => {
+              setOpenAlert({
+                state: true,
+                type: "error",
+                message: "No se pudo editar de forma satisfactoria",
+              });
+            },
+          })
+          .add(() => {
+            setTimeout(() => {
+              navigate("..");
+            }, 1000);
+          });
         // servicio.updateMotoIndividual(Number.parseInt(id), moto);
       } else {
         /* alta */
-        EditorialService.altaEditorialIndividual(editorial).subscribe({
-          next: (res) => {
-            setOpenAlert({
-              state: true,
-              type: "success",
-              message: "Se pudo crear satisfactoriamente",
-            });
-            navigate("..");
-          },
-          error: (err) => {
-            setOpenAlert({
-              state: true,
-              type: "error",
-              message: "No se pudo crear de forma satisfactoria",
-            });
-          },
-        });
+        EditorialService.altaEditorialIndividual(editorial)
+          .subscribe({
+            next: (res) => {
+              setOpenAlert({
+                state: true,
+                type: "success",
+                message: "Se pudo crear satisfactoriamente",
+              });
+            },
+            error: (err) => {
+              setOpenAlert({
+                state: true,
+                type: "error",
+                message: "No se pudo crear de forma satisfactoria",
+              });
+            },
+          })
+          .add(() => {
+            setTimeout(() => {
+              navigate("..");
+            }, 1000);
+          });
       }
       setOpenModal(false);
     } else {
@@ -146,26 +166,17 @@ function EditorialesForm() {
 
   return (
     <>
-      <Container style={{ marginTop: "2rem" }}>
-        <Box
-          component="form"
-          sx={{
-            border: "1px solid lightgray",
-            margin: "1rem 0",
-            padding: "0 1rem 1rem",
-            borderRadius: "3px",
-          }}
-          noValidate
-          autoComplete="off"
-        >
+      <TableContainer component={Paper}>
+        <Box component="form" noValidate autoComplete="off">
           <div className="form-controls">
             <h2>
-              {editorial.id == -1
+              {editorial.editorial_id == -1
                 ? `Nueva editorial`
-                : `Edición de la editorial ${editorial.id}`}
+                : `Edición de la editorial ${editorial.editorial_id}`}
             </h2>
             <div className="flex-row">
               <TextField
+                disabled={fetching}
                 type="text"
                 id="nombre"
                 label="Nombre"
@@ -175,6 +186,7 @@ function EditorialesForm() {
                 value={editorial?.nombre}
               />
               <TextField
+                disabled={fetching}
                 type="text"
                 id="direccion"
                 label="Dirección"
@@ -184,6 +196,7 @@ function EditorialesForm() {
                 value={editorial?.direccion}
               />
               <TextField
+                disabled={fetching}
                 type="text"
                 id="url"
                 label="Url"
@@ -210,7 +223,11 @@ function EditorialesForm() {
             </div>
           </div>
         </Box>
-      </Container>
+        <LinearProgress
+          variant={fetching ? "indeterminate" : "determinate"}
+          value={0}
+        />
+      </TableContainer>
       <Dialog
         open={openModal}
         onClose={handleCloseModalConfirmacion}
