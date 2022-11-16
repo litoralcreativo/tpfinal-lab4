@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select,desc
 from models.tema_model import Tema
-from schemas.tema_schemas import TemaNoId
+from schemas.tema_schemas import TemaNoId,TemaForUpdate
 
 class TemaController:
     def get_all(self,db:Session):
@@ -17,7 +17,7 @@ class TemaController:
         db.commit()
         return db.execute(select(Tema).order_by(desc(Tema.tema_id))).scalars().first()
 
-    def update_tema(self,db:Session,datos:Tema,id:int):
+    def update_tema(self,db:Session,datos:TemaForUpdate,id:int):
         tema = self.get_by_id(db,id)
         if tema is None:
             return None

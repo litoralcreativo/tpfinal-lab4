@@ -13,7 +13,7 @@ class LibroBase(BaseModel):
     anio_edicion: Optional[int]
     editorial_id: int
     formato_id: int
-    autor_dni: list[int]
+    autor_id: list[int]
     temas_id: list[int]
 
 class LibroDTO(BaseModel):
@@ -23,8 +23,6 @@ class LibroDTO(BaseModel):
     anio_edicion: int
     editorial_id: int
     formato_id: int
-    # editorial: EditorialDTO
-    # formato: FormatoDTO
     temas: list[TemaDTO]
     autores: list[AutorDTO]
 
@@ -34,5 +32,5 @@ class LibroForUpdate(BaseModel):
     anio_edicion: Optional[int]
     editorial_id: Optional[int]
     formato_id: Optional[int]
-    autor_dni: Optional[list[int]]
+    autor_id: Optional[list[int]]
     temas_id: Optional[list[int]]

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select,desc
 from models.editorial_model import Editorial
-from schemas.editorial_schemas import EditorialNoId
+from schemas.editorial_schemas import EditorialNoId, EditorialForUpdate
 
 class EditorialController:
     
@@ -18,7 +18,7 @@ class EditorialController:
         db.commit()
         return db.execute(select(Editorial).order_by(desc(Editorial.editorial_id))).scalars().first()
 
-    def update_editorial(self,db:Session,datos:EditorialNoId,id:int):
+    def update_editorial(self,db:Session,datos:EditorialForUpdate,id:int):
         editorial = self.get_by_id(db,id)
         if editorial is None:
             return None

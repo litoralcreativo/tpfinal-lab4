@@ -6,7 +6,7 @@ class Editorial(BaseBd):
     __tablename__ = 'editorial'
     editorial_id = Column(Integer, primary_key=True)
     nombre = Column(String(255), nullable=False)
-    direccion = Column(String(255))
+    direccion = Column(String(255),nullable=False)
     url = Column(String(255))
     relationship("Libro")
 

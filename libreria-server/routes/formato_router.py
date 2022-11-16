@@ -3,7 +3,7 @@ from config.db import get_db
 from sqlalchemy.orm import Session
 from starlette import status
 from controllers.formato_controller import FormatoController
-from schemas.formato_schemas import FormatoDTO,FormatoNoId
+from schemas.formato_schemas import FormatoDTO,FormatoNoId,FormatoForUpdate
 
 formato_router =  APIRouter(prefix='/formatos',tags=['Formatos'])
 formato_controller = FormatoController()
@@ -35,7 +35,7 @@ def new_formato(datos:FormatoNoId, db:Session = Depends(get_db)):
 
     
 @formato_router.put('/{id}',response_model=FormatoDTO)
-def update_formato(datos:FormatoNoId,id:int,db:Session = Depends(get_db)):
+def update_formato(datos:FormatoForUpdate,id:int,db:Session = Depends(get_db)):
     try:
         result: FormatoDTO = formato_controller.update_formato(db,datos,id)
         if result is None:

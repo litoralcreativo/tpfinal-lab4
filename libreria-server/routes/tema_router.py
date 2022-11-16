@@ -3,7 +3,7 @@ from config.db import get_db
 from sqlalchemy.orm import Session
 from starlette import status
 from controllers.tema_controller import TemaController
-from schemas.tema_schemas import TemaDTO,TemaNoId
+from schemas.tema_schemas import TemaDTO,TemaNoId,TemaForUpdate
 
 tema_router =  APIRouter(prefix='/temas',tags=['Temas'])
 tema_controller = TemaController()
@@ -34,7 +34,7 @@ def new_tema(datos:TemaNoId, db:Session = Depends(get_db)):
 
     
 @tema_router.put('/{id}',response_model=TemaDTO)
-def update_tema(datos:TemaNoId,id:int,db:Session = Depends(get_db)):
+def update_tema(datos:TemaForUpdate,id:int,db:Session = Depends(get_db)):
     try:
         result: TemaDTO = tema_controller.update_tema(db,datos,id)
         if result is None:
