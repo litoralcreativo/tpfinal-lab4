@@ -3,21 +3,6 @@ import { from, map, Observable, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import { Editorial } from "../Models/Editorial.model";
 
-const editoriales: Editorial[] = [
-  {
-    editorial_id: 1,
-    nombre: "Atlantida",
-    url: "https://atlantida.com.ar/",
-    direccion: "Elcano 3847, CABA",
-  },
-  {
-    editorial_id: 2,
-    nombre: "AZ",
-    url: "http://az.com.ar/",
-    direccion: "Montenegro 1335, CABA",
-  },
-];
-
 class EditorialService {
   constructor() {}
 

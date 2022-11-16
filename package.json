@@ -8,5 +8,6 @@
     "server": "cd libreria-server && python server.py"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {}
 }
