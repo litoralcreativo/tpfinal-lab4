@@ -1,24 +1,27 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select,desc
 from models.editorial_model import Editorial
-from schemas.editorial_schemas import EditorialNoId, EditorialForUpdate
+from schemas.editorial_schemas import EditorialNoId, EditorialForUpdate,EditorialDTO
+from typing import List
 
-class EditorialController:
+class EditorialRepository:
     
-    def get_all(self,db:Session):
-        return db.execute(select(Editorial).order_by(Editorial.editorial_id)).scalars().all()
+    def get_all(self,db:Session) -> List[Editorial]:
+        result = db.execute(select(Editorial).order_by(Editorial.editorial_id)).scalars().all()
+        return result
 
-    def get_by_id(self,db:Session, id:int):
+    def get_by_id(self,db:Session, id:int) -> Editorial:
         result = db.execute(select(Editorial).where(Editorial.editorial_id == id)).scalar()
         return result
 
-    def new_editorial(self, db:Session, datos:EditorialNoId):
+    def new_editorial(self, db:Session, datos:EditorialNoId) -> Editorial:
         nueva_editorial: Editorial = Editorial(**datos.dict())
         db.add(nueva_editorial)
         db.commit()
-        return db.execute(select(Editorial).order_by(desc(Editorial.editorial_id))).scalars().first()
+        result =  db.execute(select(Editorial).order_by(desc(Editorial.editorial_id))).scalars().first()
+        return result
 
-    def update_editorial(self,db:Session,datos:EditorialForUpdate,id:int):
+    def update_editorial(self,db:Session,datos:EditorialForUpdate,id:int) -> Editorial:
         editorial = self.get_by_id(db,id)
         if editorial is None:
             return None
@@ -29,7 +32,7 @@ class EditorialController:
             db.commit()
         return editorial
 
-    def delete_editorial(self,db:Session,id:int):
+    def delete_editorial(self,db:Session,id:int) -> Editorial:
         editorial = self.get_by_id(db,id)
         if editorial is None:
             return None

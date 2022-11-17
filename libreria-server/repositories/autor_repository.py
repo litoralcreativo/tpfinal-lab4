@@ -2,16 +2,18 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select,desc
 from models.autor_model import Autor
 from schemas.autor_schemas import AutorNoId,AutorForUpdate
+from typing import List
 
-class AutorController:
-    def get_all(self,db:Session):
+class AutorRepository:
+    def get_all(self,db:Session) -> List[Autor]:
         """Devuelve todos los autores dentro de la tabla
 
         Devolvemos todos los autores ordenados por el id
         """
-        return db.execute(select(Autor).order_by(Autor.id_autor)).scalars().all()
+        result = db.execute(select(Autor).order_by(Autor.id_autor)).scalars().all()
+        return result
 
-    def get_by_id(self,db:Session, id_autor:int):
+    def get_by_id(self,db:Session, id_autor:int) -> Autor:
         """Devuelve un autor por su id
 
         Parametros:
@@ -24,7 +26,7 @@ class AutorController:
         result = db.execute(select(Autor).where(Autor.id_autor == id_autor)).scalar()
         return result
 
-    def new_autor(self, db:Session, datos:AutorNoId):
+    def new_autor(self, db:Session, datos:AutorNoId) -> Autor:
         """Crea un autor nuevo
 
         LLega un Objeto de tipo Autor pero sin el id, que lo asigna la BDD
@@ -38,9 +40,10 @@ class AutorController:
         nuevo_autor: Autor = Autor(**datos.dict())
         db.add(nuevo_autor)
         db.commit()
-        return db.execute(select(Autor).order_by(desc(Autor.id_autor))).scalars().first()
+        result =  db.execute(select(Autor).order_by(desc(Autor.id_autor))).scalars().first()
+        return result
 
-    def update_autor(self,db:Session,datos:AutorForUpdate,id_autor:int):
+    def update_autor(self,db:Session,datos:AutorForUpdate,id_autor:int) -> Autor:
         """Actualiza los datos de un autor
         Busca un autor por si id, si lo encuentra actualiza los campos no NULL
         
@@ -62,7 +65,7 @@ class AutorController:
             db.commit()
         return autor
 
-    def delete_autor(self,db:Session,id_autor:int):
+    def delete_autor(self,db:Session,id_autor:int) -> Autor:
         autor = self.get_by_id(db,id_autor)
         if autor is None:
             return None
