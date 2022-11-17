@@ -36,9 +36,11 @@ def get_all(db:Session = Depends(get_db)):
 def new_libro(datos:LibroBase,db:Session = Depends(get_db)):
     try:
         result = libro_controller.new_libro(db,datos)
+        print(result)
         return result
     except Exception as e:
         exception_msg = f'Type: {type(e)}. Args: {e.args}. {e}'
+        print(exception_msg)
         raise HTTPException(status_code= status.HTTP_400_BAD_REQUEST, detail= f'Error al crear el libro, revise los datos. {exception_msg}')
 
 @libro_router.get('/{isbn}',response_model=LibroDTO)

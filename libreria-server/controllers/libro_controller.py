@@ -33,8 +33,18 @@ class LibroController:
 
         db.add(nuevo_libro)
         db.commit()
-        result = db.execute(select(Libro).where(Libro.isbn == datos.isbn)).scalars().first()
-        return result
+        result = self.get_by_isbn(db,nuevo_libro.isbn)
+        libro = LibroDTO(
+                    isbn = result.isbn,
+                    anio_edicion = result.anio_edicion,
+                    titulo = result.titulo,
+                    cant_hojas = result.cant_hojas,
+                    editorial_id = result.editorial_id,
+                    formato_id = result.formato_id,
+                    temas = result.temas,
+                    autores = result.autores
+                )
+        return libro
 
     def get_by_isbn(self,db:Session,isbn:int):
             result = db.execute(select(Libro).where(Libro.isbn == isbn)).scalar()
@@ -73,8 +83,10 @@ class LibroController:
             return libro_buscado
 
     def get_by_query(self,db:Session,titulo:str, editorial_id:int, tema_id:int):
-        print(f'Titulo = {titulo}; Editorial = {editorial_id}; Tema = {tema_id}')
+
+        # este objeto permite hacer consultas y va devolviendo objetos del mismo tipo para hacer otras
         result = db.query(Libro)
+
         if titulo is not None:
             print('Entra a titulo')
             result = result.filter(Libro.titulo.ilike(titulo))
@@ -85,8 +97,11 @@ class LibroController:
             print('Entra a tema')
             result = result.join(Libro.temas).filter(Libro.temas.any(Tema.tema_id == tema_id))
 
+        # guardo los datos de las consultas
         query_result = result.all()
+
         list_for_ret = []
+        # por cada row que me trajo el query armo los DTOS utilizando los ISBN que me trajo el QUERY
         for resultados in query_result:
             res = self.get_by_isbn(db,resultados.isbn)
             if res is not None:
@@ -103,13 +118,3 @@ class LibroController:
                 list_for_ret.append(libro)
         
         return list_for_ret
-
-        
-        
-        
-
-
-
-
-
-

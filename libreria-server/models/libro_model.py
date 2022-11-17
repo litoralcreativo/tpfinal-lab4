@@ -1,8 +1,8 @@
 from config.db import BaseBd
-from sqlalchemy import Column,Integer,String,Date,func,ForeignKey,Table
+from sqlalchemy import Column,Integer,String,ForeignKey,Table
 from sqlalchemy.orm import relationship
-from datetime import datetime
 
+# Tabla derivada para asociacion N a N de libros y temas
 tema_libro = Table(
     "temas_libros",
     BaseBd.metadata,
@@ -10,6 +10,7 @@ tema_libro = Table(
     Column("libro_isbn", ForeignKey("libro.isbn"), primary_key=True)
     )
 
+# Tabla derivada para asociacion N a N de libros y autores
 autor_libro = Table(
     "autores_libros",
     BaseBd.metadata,
