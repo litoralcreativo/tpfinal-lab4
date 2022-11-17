@@ -13,7 +13,7 @@ erDiagram
     autor }|--o{ libro : tiene
     libro }o--|{ editorial : pertenece
     libro }o--|| formato : es
-    tema ||--o{ libro : incluye
+    tema ||--o{ libro : tipo
 
 ```
 
