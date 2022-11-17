@@ -10,6 +10,33 @@ autor_controller = AutorController()
 tema_controller = TemaController()
 class LibroController:
 
+        
+    def create_libro(self,lib:Libro):
+        """Crea un LibroDTO a partir de un Model Libro
+
+        Recibe un Model de libro y crea un objeto LibroDTO para poder ser tratado
+
+        Parametros:
+            lib: Libro (Objeto de Model Libro)
+
+        Return:
+            libro: LibroDTO (Para llevar a front)
+        
+        Usado en:
+            POST, PUT
+        """
+        libro = LibroDTO(
+                    isbn = lib.isbn,
+                    anio_edicion = lib.anio_edicion,
+                    titulo = lib.titulo,
+                    cant_hojas = lib.cant_hojas,
+                    editorial_id = lib.editorial_id,
+                    formato_id = lib.formato_id,
+                    temas = lib.temas,
+                    autores = lib.autores
+                )
+        return libro
+
     def get_all(self,db:Session):
         result = db.execute(select(Libro).order_by(Libro.isbn)).scalars().all()
         return result
@@ -34,16 +61,7 @@ class LibroController:
         db.add(nuevo_libro)
         db.commit()
         result = self.get_by_isbn(db,nuevo_libro.isbn)
-        libro = LibroDTO(
-                    isbn = result.isbn,
-                    anio_edicion = result.anio_edicion,
-                    titulo = result.titulo,
-                    cant_hojas = result.cant_hojas,
-                    editorial_id = result.editorial_id,
-                    formato_id = result.formato_id,
-                    temas = result.temas,
-                    autores = result.autores
-                )
+        libro = self.create_libro(result)
         return libro
 
     def get_by_isbn(self,db:Session,isbn:int):
@@ -105,16 +123,7 @@ class LibroController:
         for resultados in query_result:
             res = self.get_by_isbn(db,resultados.isbn)
             if res is not None:
-                libro = LibroDTO(
-                    isbn = res.isbn,
-                    anio_edicion = res.anio_edicion,
-                    titulo = res.titulo,
-                    cant_hojas = res.cant_hojas,
-                    editorial_id = res.editorial_id,
-                    formato_id = res.formato_id,
-                    temas = res.temas,
-                    autores = res.autores
-                )
+                libro = self.create_libro(res)
                 list_for_ret.append(libro)
         
         return list_for_ret
