@@ -19,7 +19,7 @@ function Cruds() {
       <h1>Librería</h1>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs value={value} onChange={handleChange} aria-label="main tabs">
-          <Tab label="Libros" value={"libros"} disabled />
+          <Tab label="Libros" value={"libros"} />
           <Tab label="Editoriales" value={"editoriales"} />
           <Tab label="Autores" value={"autores"} />
           <Tab label="Temas" value={"temas"} />

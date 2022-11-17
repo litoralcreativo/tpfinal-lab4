@@ -10,7 +10,7 @@ class FormatoService {
    * GET que consulta los formatos
    * @returns observable de todas los formatos
    */
-  static getFormatos = (): Observable<Formato[]> => {
+  static getAll = (): Observable<Formato[]> => {
     return ajax
       .get<Formato[]>("http://localhost:8000/formatos")
       .pipe(map((x) => x.response));
@@ -21,7 +21,7 @@ class FormatoService {
    * @param id identificador del formato
    * @returns observable del formato buscada
    */
-  static getFormatoIndividual = (id: number): Observable<Formato> => {
+  static getSingle = (id: number): Observable<Formato> => {
     return ajax
       .get<Formato>(`http://localhost:8000/formatos/${id}`)
       .pipe(map((x) => x.response));
@@ -33,7 +33,7 @@ class FormatoService {
    * @param {Formato} newValue formato con valores modificados
    * @returns observable del formato editado
    */
-  static updateFormatoIndividual = (
+  static updateSingle = (
     id: number,
     newValue: Formato
   ): Observable<Formato> => {
@@ -47,7 +47,7 @@ class FormatoService {
    * @param {Formato} newValue formato a ser insertado
    * @returns observable del formato insertado
    */
-  static altaFormatoIndividual = (newValue: Formato): Observable<Formato> => {
+  static createSingle = (newValue: Formato): Observable<Formato> => {
     return ajax
       .post<Formato>(`http://localhost:8000/formatos`, newValue)
       .pipe(map((x) => x.response));
@@ -57,7 +57,7 @@ class FormatoService {
    * DELETE que elimina un formato
    * @param id identificador de la formato a ser eliminado
    */
-  static bajaFormatoIndividual = (id: number): Observable<any> => {
+  static removeSingle = (id: number): Observable<any> => {
     return ajax
       .delete<any>(`http://localhost:8000/formatos/${id}`)
       .pipe(map((x) => x.response));

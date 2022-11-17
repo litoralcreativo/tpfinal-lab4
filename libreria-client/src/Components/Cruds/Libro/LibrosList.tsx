@@ -15,7 +15,7 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -23,15 +23,15 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
 
 import Snackbar from "@mui/material/Snackbar";
-import MuiAlert, { AlertColor, AlertProps } from "@mui/material/Alert";
-import EditorialService from "../../../Services/editoriales.service";
-import FormatoService from "../../../Services/formatos.service";
-import { Formato } from "../../../Models/Formato.model";
+import MuiAlert, { AlertColor } from "@mui/material/Alert";
+import { Libro } from "../../../Models/Libro.model";
+import { LibroService } from "../../../Services/libros.service";
+import { LibreriaServices } from "../../../Services/services.factory";
 
 function FormatosList() {
   let navigate = useNavigate();
   const [fetching, setFetching] = useState(false);
-  const [datos, setDatos] = useState<Formato[]>([]);
+  const [datos, setDatos] = useState<Libro[]>([]);
   const [openModal, setOpenModal] = useState(false);
   const [openAlert, setOpenAlert] = useState<{
     state: boolean;
@@ -46,7 +46,8 @@ function FormatosList() {
 
   useEffect(() => {
     setFetching(true);
-    FormatoService.getAll()
+    LibreriaServices.libros
+      .getAll()
       .subscribe({
         next: (res) => {
           setDatos(res);
@@ -79,7 +80,7 @@ function FormatosList() {
   const handleCloseModalConfirmacion = (result: boolean) => {
     if (result) {
       if (idToDelete) {
-        FormatoService.removeSingle(idToDelete).subscribe({
+        LibreriaServices.libros.removeSingle(idToDelete).subscribe({
           next: (res) => {
             setOpenAlert({
               state: true,
@@ -123,24 +124,30 @@ function FormatosList() {
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Id</TableCell>
-              <TableCell align="left">Nombre</TableCell>
+              <TableCell>ISBN</TableCell>
+              <TableCell align="left">Titulo</TableCell>
+              <TableCell align="left">Paginas</TableCell>
+              <TableCell align="left">Editorial</TableCell>
+              <TableCell align="left">Formato</TableCell>
               <TableCell align="right">Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {datos.map((editorial: Formato) => (
-              <TableRow key={editorial.formato_id}>
+            {datos.map((libro: Libro) => (
+              <TableRow key={libro.isbn}>
                 <TableCell component="th" scope="row">
-                  {editorial.formato_id}
+                  {libro.isbn}
                 </TableCell>
-                <TableCell align="left">{editorial.nombre}</TableCell>
+                <TableCell align="left">{libro.titulo}</TableCell>
+                <TableCell align="left">{libro.cant_hojas}</TableCell>
+                <TableCell align="left">{libro.editorial_id}</TableCell>
+                <TableCell align="left">{libro.formato_id}</TableCell>
                 <TableCell align="right">
                   <IconButton
                     color="success"
                     aria-label="upload picture"
                     component="label"
-                    onClick={() => onIdClick(editorial.formato_id)}
+                    onClick={() => onIdClick(libro.isbn)}
                   >
                     <EditIcon />
                   </IconButton>
@@ -148,9 +155,7 @@ function FormatosList() {
                     color="error"
                     aria-label="upload picture"
                     component="label"
-                    onClick={() =>
-                      handleOpenModalConfirmacion(editorial.formato_id)
-                    }
+                    onClick={() => handleOpenModalConfirmacion(libro.isbn)}
                   >
                     <DeleteIcon />
                   </IconButton>

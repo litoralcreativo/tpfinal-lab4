@@ -22,10 +22,13 @@ import FormatosList from "./Components/Cruds/Formatos/FormatosList";
 import FormatosForm from "./Components/Cruds/Formatos/FormatosForm";
 import Autores from "./Components/Cruds/Autores/Autores";
 import AutoresList from "./Components/Cruds/Autores/AutoresList";
-import AutoresForm from "./Components/Cruds/Autores/AutoresForm";
 import Temas from "./Components/Cruds/Temas/Temas";
 import TemasList from "./Components/Cruds/Temas/TemasList";
 import TemasForm from "./Components/Cruds/Temas/TemasForm";
+import Libros from "./Components/Cruds/Libro/Libros";
+import LibrosList from "./Components/Cruds/Libro/LibrosList";
+import LibrosForm from "./Components/Cruds/Libro/LibrosForm";
+import AutoresForm from "./Components/Cruds/Autores/AutoresForm";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -37,6 +40,11 @@ root.render(
         <Route path="/" element={<Home />} />
         <Route path="home" element={<Home />} />
         <Route path="libreria" element={<Cruds />}>
+          <Route path="libros" element={<Libros />}>
+            <Route path="" element={<LibrosList />} />
+            <Route path=":id" element={<LibrosForm />} />
+            <Route path="alta" element={<LibrosForm />} />
+          </Route>
           <Route path="editoriales" element={<Editoriales />}>
             <Route path="" element={<EditorialesList />} />
             <Route path=":id" element={<EditorialesForm />} />

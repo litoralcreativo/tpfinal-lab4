@@ -10,7 +10,7 @@ class EditorialService {
    * GET que consulta las editoriales
    * @returns observable de todas las editoriales
    */
-  static getEditoriales = (): Observable<Editorial[]> => {
+  static getAll = (): Observable<Editorial[]> => {
     return ajax
       .get<Editorial[]>("http://localhost:8000/editoriales")
       .pipe(map((x) => x.response));
@@ -21,7 +21,7 @@ class EditorialService {
    * @param id identificador de la editorial
    * @returns observable de la editorial buscada
    */
-  static getEditorialIndividual = (id: number): Observable<Editorial> => {
+  static getSingle = (id: number): Observable<Editorial> => {
     return ajax
       .get<Editorial>(`http://localhost:8000/editoriales/${id}`)
       .pipe(map((x) => x.response));
@@ -33,7 +33,7 @@ class EditorialService {
    * @param {Editorial} newValue editorial con valores modificados
    * @returns observable de la editorial editada
    */
-  static updateEditorialIndividual = (
+  static updateSingle = (
     id: number,
     newValue: Editorial
   ): Observable<Editorial> => {
@@ -47,9 +47,7 @@ class EditorialService {
    * @param {Editorial} newValue editorial a ser insertada
    * @returns observable editorial insertada
    */
-  static altaEditorialIndividual = (
-    newValue: Editorial
-  ): Observable<Editorial> => {
+  static createSingle = (newValue: Editorial): Observable<Editorial> => {
     return ajax
       .post<Editorial>(`http://localhost:8000/editoriales`, newValue)
       .pipe(map((x) => x.response));
@@ -59,7 +57,7 @@ class EditorialService {
    * DELETE que elimina una editorial
    * @param id identificador de la editorial a ser eliminada
    */
-  static bajaEditorialIndividual = (id: number): Observable<any> => {
+  static removeSingle = (id: number): Observable<any> => {
     return ajax
       .delete<any>(`http://localhost:8000/editoriales/${id}`)
       .pipe(map((x) => x.response));

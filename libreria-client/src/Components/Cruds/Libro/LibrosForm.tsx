@@ -21,23 +21,34 @@ import { useNavigate, useParams } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertColor, AlertProps } from "@mui/material/Alert";
-import { Formato } from "../../../Models/Formato.model";
-import FormatoService from "../../../Services/formatos.service";
-import { timer } from "rxjs";
+import { LibreriaServices } from "../../../Services/services.factory";
+import { Libro, LibroDTO } from "../../../Models/Libro.model";
 
-function FormatosForm() {
+function LibrosForm() {
   let navigate = useNavigate();
   const [fetching, setFetching] = useState(false);
-  const { id } = useParams();
+  const { id: isbn } = useParams();
 
   const [validForm, setValidForm] = useState<boolean>(false);
-  const [formato, setFormato] = useState<Formato>({
-    formato_id: -1,
-    nombre: "",
+  const [libro, setLibro] = useState<LibroDTO>({
+    isbn: "",
+    titulo: "",
+    cant_hojas: "",
+    anio_edicion: "",
+    formato_id: "",
+    editorial_id: "",
+    temas: [],
+    autores: [],
   });
-  const [initialFormato, setInitialFormato] = useState<Formato>({
-    formato_id: -1,
-    nombre: "",
+  const [initialLibro, setInitialLibro] = useState<LibroDTO>({
+    isbn: "",
+    titulo: "",
+    cant_hojas: "",
+    anio_edicion: "",
+    formato_id: "",
+    editorial_id: "",
+    temas: [],
+    autores: [],
   });
   const [openAlert, setOpenAlert] = useState<{
     state: boolean;
@@ -50,15 +61,15 @@ function FormatosForm() {
   });
 
   useEffect(() => {
-    if (id) {
+    if (isbn) {
       setFetching(true);
-      FormatoService.getSingle(Number.parseInt(id))
+      LibreriaServices.libros
+        .getSingle(Number.parseInt(isbn))
         .subscribe({
           next: (res) => {
-            const formatoFetched = res;
-            if (formatoFetched) {
-              setFormato({ ...formatoFetched });
-              setInitialFormato({ ...formatoFetched });
+            if (res) {
+              setLibro(LibreriaServices.libros.parseToLibroDTO(res));
+              setInitialLibro(LibreriaServices.libros.parseToLibroDTO(res));
             }
           },
         })
@@ -67,31 +78,45 @@ function FormatosForm() {
         });
     }
     return () => {};
-  }, [id]);
+  }, [isbn]);
 
   const checkValues = (): boolean => {
     let res = true;
 
     /* required */
-    if (formato.nombre == "") return false;
+    if (libro.isbn == "") return false;
+    if (libro.cant_hojas == "") return false;
+    if (libro.anio_edicion == "") return false;
+    if (libro.formato_id == "") return false;
+    if (libro.editorial_id == "") return false;
 
     /* different */
-    if (formato.nombre == initialFormato.nombre) return false;
+    if (libro.cant_hojas != initialLibro.cant_hojas) return true;
+    if (libro.anio_edicion != initialLibro.anio_edicion) return true;
+    if (libro.formato_id != initialLibro.formato_id) return true;
+    if (libro.editorial_id != initialLibro.editorial_id) return true;
+
+    //TODO: chequear cambios en arrays..
+
     return res;
   };
 
   useEffect(() => {
     setValidForm(checkValues());
     return () => {};
-  }, [formato]);
+  }, [libro]);
 
   const [openModal, setOpenModal] = useState(false);
 
   const handleCloseModalConfirmacion = (result: boolean) => {
     if (result) {
       /* edicion */
-      if (id) {
-        FormatoService.updateSingle(Number.parseInt(id), formato)
+      if (isbn) {
+        LibreriaServices.libros
+          .updateSingle(
+            Number.parseInt(isbn),
+            LibreriaServices.libros.parseToLibro(libro)
+          )
           .subscribe({
             next: (res) => {
               setOpenAlert({
@@ -100,8 +125,8 @@ function FormatosForm() {
                 message: "Se pudo editar satisfactoriamente",
               });
               if (res) {
-                setFormato({ ...res });
-                setInitialFormato({ ...res });
+                setLibro(LibreriaServices.libros.parseToLibroDTO(res));
+                setInitialLibro(LibreriaServices.libros.parseToLibroDTO(res));
               }
             },
             error: (err) => {
@@ -119,7 +144,8 @@ function FormatosForm() {
           });
       } else {
         /* alta */
-        FormatoService.createSingle(formato)
+        LibreriaServices.libros
+          .createSingle(LibreriaServices.libros.parseToLibro(libro))
           .subscribe({
             next: (res) => {
               setOpenAlert({
@@ -157,21 +183,36 @@ function FormatosForm() {
       <TableContainer component={Paper}>
         <Box component="form" noValidate autoComplete="off">
           <div className="form-controls">
-            <h2>
-              {formato.formato_id == -1
-                ? `Nuevo formato`
-                : `Edición del formato ${formato.formato_id}`}
-            </h2>
+            <h2>{!isbn ? `Nuevo libro` : `Edición del libro ${isbn}`}</h2>
             <div className="flex-row">
+              {!isbn ? (
+                <TextField
+                  disabled={fetching}
+                  type="number"
+                  inputProps={{
+                    pattern: "[0-9]*",
+                    min: 10000000000,
+                    max: 99999999999,
+                  }}
+                  id="isbn"
+                  label="ISBN"
+                  onChange={(event) =>
+                    setLibro({ ...libro, isbn: event.target.value })
+                  }
+                  value={libro.isbn}
+                />
+              ) : (
+                <></>
+              )}
               <TextField
                 disabled={fetching}
                 type="text"
-                id="nombre"
-                label="Nombre"
+                id="titulo"
+                label="Titulo"
                 onChange={(event) =>
-                  setFormato({ ...formato, nombre: event.target.value })
+                  setLibro({ ...libro, titulo: event.target.value })
                 }
-                value={formato?.nombre}
+                value={libro.titulo}
               />
             </div>
             <div
@@ -251,4 +292,4 @@ function FormatosForm() {
   );
 }
 
-export default FormatosForm;
+export default LibrosForm;

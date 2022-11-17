@@ -47,7 +47,7 @@ function EditorialesList() {
 
   useEffect(() => {
     setFetching(true);
-    EditorialService.getEditoriales()
+    EditorialService.getAll()
       .subscribe({
         next: (res) => {
           setDatos(res);
@@ -80,7 +80,7 @@ function EditorialesList() {
   const handleCloseModalConfirmacion = (result: boolean) => {
     if (result) {
       if (idToDelete) {
-        EditorialService.bajaEditorialIndividual(idToDelete).subscribe({
+        EditorialService.removeSingle(idToDelete).subscribe({
           next: (res) => {
             setOpenAlert({
               state: true,

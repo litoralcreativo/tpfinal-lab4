@@ -55,7 +55,7 @@ function EditorialesForm() {
   useEffect(() => {
     if (id) {
       setFetching(true);
-      EditorialService.getEditorialIndividual(Number.parseInt(id))
+      EditorialService.getSingle(Number.parseInt(id))
         .subscribe({
           next: (res) => {
             const editorialFetched = res;
@@ -99,10 +99,7 @@ function EditorialesForm() {
     if (result) {
       /* edicion */
       if (id) {
-        EditorialService.updateEditorialIndividual(
-          Number.parseInt(id),
-          editorial
-        )
+        EditorialService.updateSingle(Number.parseInt(id), editorial)
           .subscribe({
             next: (res) => {
               setOpenAlert({
@@ -131,7 +128,7 @@ function EditorialesForm() {
         // servicio.updateMotoIndividual(Number.parseInt(id), moto);
       } else {
         /* alta */
-        EditorialService.altaEditorialIndividual(editorial)
+        EditorialService.createSingle(editorial)
           .subscribe({
             next: (res) => {
               setOpenAlert({
