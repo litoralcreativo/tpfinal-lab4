@@ -19,6 +19,26 @@ autor_libro = Table(
 )
 
 class Libro(BaseBd):
+    """Modelo Para ORM
+
+    Atributos:
+        isbn = Integer (PK)
+
+        titulo = String NOT NULL
+
+        cant_hojas = Integer NOT NULL
+
+        anio_edicion = INTEGER NOT NULL
+
+        editorial_id = INTEGER NOT NULL FK editorial
+
+        formato_id = INTEGER NOT NULL FK formato
+
+        temas = Refiere a la relacion N -> N con Temas y la tabla derivada
+        
+        autores = Refiere a la relacion N -> N con Autores y la tabla derivada
+
+    """
     __tablename__ = "libro"
     isbn = Column(Integer,primary_key=True,autoincrement=False)
     titulo = Column(String(255),nullable=False)
