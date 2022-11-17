@@ -1,11 +1,12 @@
 import { Box, Container, Tab, Tabs } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import "./Cruds.css";
 
 function Cruds() {
-  const [value, setValue] = useState("editoriales");
+  const [value, setValue] = useState("libros");
   let navigate = useNavigate();
+  let location = useLocation();
   useEffect(() => {
     navigate(value);
   }, [value]);

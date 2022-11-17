@@ -10,6 +10,7 @@ import {
   FormControl,
   FormLabel,
   IconButton,
+  Input,
   LinearProgress,
   Paper,
   Slider,
@@ -23,6 +24,12 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertColor, AlertProps } from "@mui/material/Alert";
 import { LibreriaServices } from "../../../Services/services.factory";
 import { Libro, LibroDTO } from "../../../Models/Libro.model";
+import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import dayjs, { Dayjs } from "dayjs";
+
+const InputMask = require("react-input-mask");
 
 function LibrosForm() {
   let navigate = useNavigate();
@@ -34,7 +41,7 @@ function LibrosForm() {
     isbn: "",
     titulo: "",
     cant_hojas: "",
-    anio_edicion: "",
+    anio_edicion: new Date().getFullYear().toString(),
     formato_id: "",
     editorial_id: "",
     temas: [],
@@ -44,7 +51,7 @@ function LibrosForm() {
     isbn: "",
     titulo: "",
     cant_hojas: "",
-    anio_edicion: "",
+    anio_edicion: new Date().getFullYear().toString(),
     formato_id: "",
     editorial_id: "",
     temas: [],
@@ -178,29 +185,64 @@ function LibrosForm() {
     setOpenAlert((prev) => ({ ...prev, state: false }));
   };
 
+  const handleChangeYear = (newValue: Dayjs | null) => {
+    if (newValue) {
+      setLibro({ ...libro, anio_edicion: newValue.year().toString() });
+    }
+  };
+
+  function handlePaginasChange(event: any) {
+    if (isNaN(event.target.valueAsNumber) && event.nativeEvent.data !== null) {
+      return;
+    }
+
+    if (event.target.value.length <= 5) {
+      setLibro({ ...libro, cant_hojas: event.target.value });
+    }
+  }
+
   return (
     <>
       <TableContainer component={Paper}>
         <Box component="form" noValidate autoComplete="off">
           <div className="form-controls">
-            <h2>{!isbn ? `Nuevo libro` : `Edición del libro ${isbn}`}</h2>
+            <h2>
+              {!isbn ? (
+                `Nuevo libro`
+              ) : (
+                <span>
+                  Edición del libro{" "}
+                  <span
+                    style={{
+                      fontFamily: "monospace",
+                      fontSize: "1.5em",
+                      fontWeight: 300,
+                    }}
+                  >
+                    {isbn}
+                  </span>
+                </span>
+              )}
+            </h2>
             <div className="flex-row">
               {!isbn ? (
-                <TextField
-                  disabled={fetching}
-                  type="number"
-                  inputProps={{
-                    pattern: "[0-9]*",
-                    min: 10000000000,
-                    max: 99999999999,
-                  }}
-                  id="isbn"
-                  label="ISBN"
-                  onChange={(event) =>
-                    setLibro({ ...libro, isbn: event.target.value })
-                  }
-                  value={libro.isbn}
-                />
+                <>
+                  <InputMask
+                    disabled={fetching}
+                    mask="999 9 99 999999 9"
+                    className="isbn-input"
+                    alwaysShowMask={false}
+                    maskPlaceholder=" "
+                    value={libro.isbn}
+                    id="isbn"
+                    label="ISBN"
+                    onChange={(event: any) =>
+                      setLibro({ ...libro, isbn: event.target.value })
+                    }
+                  >
+                    <TextField />
+                  </InputMask>
+                </>
               ) : (
                 <></>
               )}
@@ -214,6 +256,45 @@ function LibrosForm() {
                 }
                 value={libro.titulo}
               />
+            </div>
+
+            <div className="flex-row">
+              <TextField
+                disabled={fetching}
+                type="number"
+                id="cant_hojas"
+                inputProps={{
+                  min: 1,
+                  max: 99999,
+                }}
+                label="Cantidad de páginas"
+                onChange={(event: any) => handlePaginasChange(event)}
+                value={libro.cant_hojas}
+              />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DesktopDatePicker
+                  views={["year"]}
+                  label="Año"
+                  inputFormat="YYYY"
+                  minDate={dayjs(new Date(1800, 1))}
+                  maxDate={dayjs(Date.now())}
+                  value={libro.anio_edicion}
+                  onChange={handleChangeYear}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
+              {/* <TextField
+                disabled={fetching}
+                type="text"
+                id="anio_edicion"
+                inputProps={{
+                  min: 1,
+                  max: 99999,
+                }}
+                label="Año de edición"
+                onChange={(event: any) => handleAnioChange(event)}
+                value={libro.anio_edicion}
+              /> */}
             </div>
             <div
               style={{ alignSelf: "flex-end", display: "flex", gap: "1rem" }}
