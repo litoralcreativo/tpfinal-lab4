@@ -10,12 +10,10 @@ Realizar un programa que permita administrar una librería/biblioteca. Se deben 
 
 ```mermaid
 erDiagram
-    autor_libro ||--o{ autor : escritor
-    autor_libro ||--o{ libro : escrito
-    libro ||--o{ editorial : pertenece
-    libro ||--o{ formato : es
-    tema_libro ||--o{ libro : es
-    tema_libro ||--o{ tema : incluye
+    autor }|--o{ libro : tiene
+    libro }o--|{ editorial : pertenece
+    libro }o--|| formato : es
+    tema ||--o{ libro : tipo
 
 ```
 

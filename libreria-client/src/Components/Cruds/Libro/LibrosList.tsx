@@ -15,23 +15,22 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import Snackbar from "@mui/material/Snackbar";
-import MuiAlert, { AlertColor, AlertProps } from "@mui/material/Alert";
-import { Autor } from "../../../Models/Autor.model";
-import AutorService from "../../../Services/autores.service";
+import MuiAlert, { AlertColor } from "@mui/material/Alert";
+import { Libro } from "../../../Models/Libro.model";
 import { LibreriaServices } from "../../../Services/services.factory";
 
-function AutoresList() {
+function FormatosList() {
   let navigate = useNavigate();
   const [fetching, setFetching] = useState(false);
-  const [datos, setDatos] = useState<Autor[]>([]);
+  const [datos, setDatos] = useState<Libro[]>([]);
   const [openModal, setOpenModal] = useState(false);
   const [openAlert, setOpenAlert] = useState<{
     state: boolean;
@@ -46,7 +45,7 @@ function AutoresList() {
 
   useEffect(() => {
     setFetching(true);
-    LibreriaServices.autores
+    LibreriaServices.libros
       .getAll()
       .subscribe({
         next: (res) => {
@@ -80,7 +79,7 @@ function AutoresList() {
   const handleCloseModalConfirmacion = (result: boolean) => {
     if (result) {
       if (idToDelete) {
-        LibreriaServices.autores.removeSingle(idToDelete).subscribe({
+        LibreriaServices.libros.removeSingle(idToDelete).subscribe({
           next: (res) => {
             setOpenAlert({
               state: true,
@@ -124,28 +123,38 @@ function AutoresList() {
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Id</TableCell>
-              <TableCell align="left">Dni</TableCell>
-              <TableCell align="left">Nombre</TableCell>
-              <TableCell align="left">Apellido</TableCell>
+              <TableCell>ISBN</TableCell>
+              <TableCell align="left">Titulo</TableCell>
+              <TableCell align="left">Paginas</TableCell>
+              <TableCell align="left">Editorial</TableCell>
+              <TableCell align="left">Formato</TableCell>
               <TableCell align="right">Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {datos.map((autor: Autor) => (
-              <TableRow key={autor.id_autor}>
+            {datos.map((libro: Libro) => (
+              <TableRow key={libro.isbn}>
                 <TableCell component="th" scope="row">
-                  {autor.id_autor}
+                  {libro.isbn}
                 </TableCell>
-                <TableCell align="left">{autor.dni}</TableCell>
-                <TableCell align="left">{autor.nombre}</TableCell>
-                <TableCell align="left">{autor.apellido}</TableCell>
+                <TableCell align="left">{libro.titulo}</TableCell>
+                <TableCell align="left">{libro.cant_hojas}</TableCell>
+                <TableCell align="left">
+                  {libro.editorial?.url ? (
+                    <Link to={libro.editorial.url}>
+                      {libro.editorial.nombre}
+                    </Link>
+                  ) : (
+                    <>{libro.editorial?.nombre}</>
+                  )}
+                </TableCell>
+                <TableCell align="left">{libro.formato?.nombre}</TableCell>
                 <TableCell align="right">
                   <IconButton
                     color="success"
                     aria-label="upload picture"
                     component="label"
-                    onClick={() => onIdClick(autor.id_autor)}
+                    onClick={() => onIdClick(libro.isbn!)}
                   >
                     <EditIcon />
                   </IconButton>
@@ -153,7 +162,7 @@ function AutoresList() {
                     color="error"
                     aria-label="upload picture"
                     component="label"
-                    onClick={() => handleOpenModalConfirmacion(autor.id_autor)}
+                    onClick={() => handleOpenModalConfirmacion(libro.isbn!)}
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -219,4 +228,4 @@ function AutoresList() {
   );
 }
 
-export default AutoresList;
+export default FormatosList;

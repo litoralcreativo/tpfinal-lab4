@@ -16,7 +16,12 @@ import {
   TableContainer,
   TextField,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, {
+  BaseSyntheticEvent,
+  SyntheticEvent,
+  useEffect,
+  useState,
+} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 import Snackbar from "@mui/material/Snackbar";
@@ -24,8 +29,10 @@ import MuiAlert, { AlertColor, AlertProps } from "@mui/material/Alert";
 import { Formato } from "../../../Models/Formato.model";
 import FormatoService from "../../../Services/formatos.service";
 import { max, timer } from "rxjs";
-import { Autor } from "../../../Models/Autor.model";
+import { Autor, AutorDTO } from "../../../Models/Autor.model";
 import AutorService from "../../../Services/autores.service";
+import { isInt16Array } from "util/types";
+import { LibreriaServices } from "../../../Services/services.factory";
 
 function AutoresForm() {
   let navigate = useNavigate();
@@ -33,15 +40,13 @@ function AutoresForm() {
   const { id } = useParams();
 
   const [validForm, setValidForm] = useState<boolean>(false);
-  const [autor, setAutor] = useState<Autor>({
-    id_autor: -1,
-    dni: undefined,
+  const [autor, setAutor] = useState<AutorDTO>({
+    dni: "",
     nombre: "",
     apellido: "",
   });
-  const [initialAutor, setInitialAutor] = useState<Autor>({
-    id_autor: -1,
-    dni: undefined,
+  const [initialAutor, setInitialAutor] = useState<AutorDTO>({
+    dni: "",
     nombre: "",
     apellido: "",
   });
@@ -58,13 +63,16 @@ function AutoresForm() {
   useEffect(() => {
     if (id) {
       setFetching(true);
-      AutorService.getSingle(Number.parseInt(id))
+      LibreriaServices.autores
+        .getSingle(Number.parseInt(id))
         .subscribe({
           next: (res) => {
             const formatoFetched = res;
             if (formatoFetched) {
-              setAutor({ ...formatoFetched });
-              setInitialAutor({ ...formatoFetched });
+              setAutor(LibreriaServices.autores.parseToAutor(formatoFetched));
+              setInitialAutor(
+                LibreriaServices.autores.parseToAutor(formatoFetched)
+              );
             }
           },
         })
@@ -79,13 +87,15 @@ function AutoresForm() {
     let res = true;
 
     /* required */
+    if (autor.dni === "") return false;
     if (autor.nombre == "") return false;
     if (autor.apellido == "") return false;
 
     /* different */
     if (
+      autor.dni == initialAutor.dni &&
       autor.nombre == initialAutor.nombre &&
-      autor.nombre == initialAutor.nombre
+      autor.apellido == initialAutor.apellido
     )
       return false;
     return res;
@@ -102,7 +112,11 @@ function AutoresForm() {
     if (result) {
       /* edicion */
       if (id) {
-        AutorService.updateSingle(Number.parseInt(id), autor)
+        LibreriaServices.autores
+          .updateSingle(
+            Number.parseInt(id),
+            LibreriaServices.autores.parseToAutorDTO(autor)
+          )
           .subscribe({
             next: (res) => {
               setOpenAlert({
@@ -111,8 +125,8 @@ function AutoresForm() {
                 message: "Se pudo editar satisfactoriamente",
               });
               if (res) {
-                setAutor({ ...res });
-                setInitialAutor({ ...res });
+                setAutor(LibreriaServices.autores.parseToAutor(res));
+                setInitialAutor(LibreriaServices.autores.parseToAutor(res));
               }
             },
             error: (err) => {
@@ -130,7 +144,8 @@ function AutoresForm() {
           });
       } else {
         /* alta */
-        AutorService.createSingle(autor)
+        LibreriaServices.autores
+          .createSingle(LibreriaServices.autores.parseToAutorDTO(autor))
           .subscribe({
             next: (res) => {
               setOpenAlert({
@@ -162,20 +177,16 @@ function AutoresForm() {
   const handleAlertClose = () => {
     setOpenAlert((prev) => ({ ...prev, state: false }));
   };
-
   return (
     <>
       <TableContainer component={Paper}>
         <Box component="form" noValidate autoComplete="off">
           <div className="form-controls">
-            <h2>
-              {autor.id_autor == -1
-                ? `Nuevo autor`
-                : `Edición del autor ${autor.id_autor}`}
-            </h2>
+            <h2>{!id ? `Nuevo autor` : `Edición del autor ${id}`}</h2>
             <div className="flex-row">
               <TextField
                 disabled={fetching}
+                type="number"
                 inputProps={{
                   pattern: "[0-9]*",
                   min: 0,
@@ -183,13 +194,13 @@ function AutoresForm() {
                 }}
                 id="dni"
                 label="Dni"
-                onChange={(event) =>
+                onChange={(event: BaseSyntheticEvent) => {
                   setAutor({
                     ...autor,
-                    dni: Number.parseInt(event.target.value),
-                  })
-                }
-                value={autor?.dni}
+                    dni: event.target.value,
+                  });
+                }}
+                value={autor.dni}
               />
               <TextField
                 disabled={fetching}

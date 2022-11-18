@@ -22,8 +22,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertColor, AlertProps } from "@mui/material/Alert";
 import { Formato } from "../../../Models/Formato.model";
-import FormatoService from "../../../Services/formatos.service";
-import { timer } from "rxjs";
+import { LibreriaServices } from "../../../Services/services.factory";
 
 function FormatosForm() {
   let navigate = useNavigate();
@@ -52,7 +51,8 @@ function FormatosForm() {
   useEffect(() => {
     if (id) {
       setFetching(true);
-      FormatoService.getFormatoIndividual(Number.parseInt(id))
+      LibreriaServices.formatos
+        .getSingle(Number.parseInt(id))
         .subscribe({
           next: (res) => {
             const formatoFetched = res;
@@ -91,7 +91,8 @@ function FormatosForm() {
     if (result) {
       /* edicion */
       if (id) {
-        FormatoService.updateFormatoIndividual(Number.parseInt(id), formato)
+        LibreriaServices.formatos
+          .updateSingle(Number.parseInt(id), formato)
           .subscribe({
             next: (res) => {
               setOpenAlert({
@@ -119,7 +120,8 @@ function FormatosForm() {
           });
       } else {
         /* alta */
-        FormatoService.altaFormatoIndividual(formato)
+        LibreriaServices.formatos
+          .createSingle(formato)
           .subscribe({
             next: (res) => {
               setOpenAlert({

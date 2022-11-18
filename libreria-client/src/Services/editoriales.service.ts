@@ -1,69 +1,42 @@
 import axios from "axios";
 import { from, map, Observable, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
+import { CRUD } from "../Models/Crud.model";
 import { Editorial } from "../Models/Editorial.model";
 
-class EditorialService {
-  constructor() {}
+export default class EditorialService extends CRUD<Editorial> {
+  CONTROLLER: string = "editoriales";
 
-  /**
-   * GET que consulta las editoriales
-   * @returns observable de todas las editoriales
-   */
-  static getEditoriales = (): Observable<Editorial[]> => {
+  getAll = (): Observable<Editorial[]> => {
     return ajax
-      .get<Editorial[]>("http://localhost:8000/editoriales")
+      .get<Editorial[]>(`http://localhost:8000/${this.CONTROLLER}`)
       .pipe(map((x) => x.response));
   };
 
-  /**
-   * GET que consulta una editorial particular
-   * @param id identificador de la editorial
-   * @returns observable de la editorial buscada
-   */
-  static getEditorialIndividual = (id: number): Observable<Editorial> => {
+  getSingle = (id: number): Observable<Editorial> => {
     return ajax
-      .get<Editorial>(`http://localhost:8000/editoriales/${id}`)
+      .get<Editorial>(`http://localhost:8000/${this.CONTROLLER}/${id}`)
       .pipe(map((x) => x.response));
   };
 
-  /**
-   * PUT que modifica una editorial
-   * @param id identificador de la editorial a ser editada
-   * @param {Editorial} newValue editorial con valores modificados
-   * @returns observable de la editorial editada
-   */
-  static updateEditorialIndividual = (
-    id: number,
-    newValue: Editorial
-  ): Observable<Editorial> => {
+  updateSingle = (id: number, newValue: Editorial): Observable<Editorial> => {
     return ajax
-      .put<Editorial>(`http://localhost:8000/editoriales/${id}`, newValue)
+      .put<Editorial>(
+        `http://localhost:8000/${this.CONTROLLER}/${id}`,
+        newValue
+      )
       .pipe(map((x) => x.response));
   };
 
-  /**
-   * POST que inserta una editorial
-   * @param {Editorial} newValue editorial a ser insertada
-   * @returns observable editorial insertada
-   */
-  static altaEditorialIndividual = (
-    newValue: Editorial
-  ): Observable<Editorial> => {
+  createSingle = (newValue: Editorial): Observable<Editorial> => {
     return ajax
-      .post<Editorial>(`http://localhost:8000/editoriales`, newValue)
+      .post<Editorial>(`http://localhost:8000/${this.CONTROLLER}`, newValue)
       .pipe(map((x) => x.response));
   };
 
-  /**
-   * DELETE que elimina una editorial
-   * @param id identificador de la editorial a ser eliminada
-   */
-  static bajaEditorialIndividual = (id: number): Observable<any> => {
+  removeSingle = (id: number): Observable<any> => {
     return ajax
-      .delete<any>(`http://localhost:8000/editoriales/${id}`)
+      .delete<any>(`http://localhost:8000/${this.CONTROLLER}/${id}`)
       .pipe(map((x) => x.response));
   };
 }
-
-export default EditorialService;

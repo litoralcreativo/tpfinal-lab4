@@ -1,11 +1,12 @@
 import { Box, Container, Tab, Tabs } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import "./Cruds.css";
 
 function Cruds() {
-  const [value, setValue] = useState("editoriales");
+  const [value, setValue] = useState("libros");
   let navigate = useNavigate();
+  let location = useLocation();
   useEffect(() => {
     navigate(value);
   }, [value]);
@@ -19,7 +20,7 @@ function Cruds() {
       <h1>Librería</h1>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs value={value} onChange={handleChange} aria-label="main tabs">
-          <Tab label="Libros" value={"libros"} disabled />
+          <Tab label="Libros" value={"libros"} />
           <Tab label="Editoriales" value={"editoriales"} />
           <Tab label="Autores" value={"autores"} />
           <Tab label="Temas" value={"temas"} />
