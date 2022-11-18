@@ -20,12 +20,11 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertColor } from "@mui/material/Alert";
 import { Libro } from "../../../Models/Libro.model";
-import { LibroService } from "../../../Services/libros.service";
 import { LibreriaServices } from "../../../Services/services.factory";
 
 function FormatosList() {
@@ -140,14 +139,22 @@ function FormatosList() {
                 </TableCell>
                 <TableCell align="left">{libro.titulo}</TableCell>
                 <TableCell align="left">{libro.cant_hojas}</TableCell>
-                <TableCell align="left">{libro.editorial_id}</TableCell>
-                <TableCell align="left">{libro.formato_id}</TableCell>
+                <TableCell align="left">
+                  {libro.editorial?.url ? (
+                    <Link to={libro.editorial.url}>
+                      {libro.editorial.nombre}
+                    </Link>
+                  ) : (
+                    <>{libro.editorial?.nombre}</>
+                  )}
+                </TableCell>
+                <TableCell align="left">{libro.formato?.nombre}</TableCell>
                 <TableCell align="right">
                   <IconButton
                     color="success"
                     aria-label="upload picture"
                     component="label"
-                    onClick={() => onIdClick(libro.isbn)}
+                    onClick={() => onIdClick(libro.isbn!)}
                   >
                     <EditIcon />
                   </IconButton>
@@ -155,7 +162,7 @@ function FormatosList() {
                     color="error"
                     aria-label="upload picture"
                     component="label"
-                    onClick={() => handleOpenModalConfirmacion(libro.isbn)}
+                    onClick={() => handleOpenModalConfirmacion(libro.isbn!)}
                   >
                     <DeleteIcon />
                   </IconButton>

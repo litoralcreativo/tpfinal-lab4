@@ -22,7 +22,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertColor, AlertProps } from "@mui/material/Alert";
 import { Editorial } from "../../../Models/Editorial.model";
-import EditorialService from "../../../Services/editoriales.service";
+import { LibreriaServices } from "../../../Services/services.factory";
 
 function EditorialesForm() {
   let navigate = useNavigate();
@@ -55,7 +55,8 @@ function EditorialesForm() {
   useEffect(() => {
     if (id) {
       setFetching(true);
-      EditorialService.getSingle(Number.parseInt(id))
+      LibreriaServices.editoriales
+        .getSingle(Number.parseInt(id))
         .subscribe({
           next: (res) => {
             const editorialFetched = res;
@@ -99,7 +100,8 @@ function EditorialesForm() {
     if (result) {
       /* edicion */
       if (id) {
-        EditorialService.updateSingle(Number.parseInt(id), editorial)
+        LibreriaServices.editoriales
+          .updateSingle(Number.parseInt(id), editorial)
           .subscribe({
             next: (res) => {
               setOpenAlert({
@@ -128,7 +130,8 @@ function EditorialesForm() {
         // servicio.updateMotoIndividual(Number.parseInt(id), moto);
       } else {
         /* alta */
-        EditorialService.createSingle(editorial)
+        LibreriaServices.editoriales
+          .createSingle(editorial)
           .subscribe({
             next: (res) => {
               setOpenAlert({

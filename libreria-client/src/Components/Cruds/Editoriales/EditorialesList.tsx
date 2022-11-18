@@ -25,9 +25,9 @@ import { useNavigate } from "react-router-dom";
 
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertColor, AlertProps } from "@mui/material/Alert";
-import EditorialService from "../../../Services/editoriales.service";
 import { Editorial } from "../../../Models/Editorial.model";
 import { AjaxError } from "rxjs/ajax";
+import { LibreriaServices } from "../../../Services/services.factory";
 
 function EditorialesList() {
   let navigate = useNavigate();
@@ -47,7 +47,8 @@ function EditorialesList() {
 
   useEffect(() => {
     setFetching(true);
-    EditorialService.getAll()
+    LibreriaServices.editoriales
+      .getAll()
       .subscribe({
         next: (res) => {
           setDatos(res);
@@ -80,7 +81,7 @@ function EditorialesList() {
   const handleCloseModalConfirmacion = (result: boolean) => {
     if (result) {
       if (idToDelete) {
-        EditorialService.removeSingle(idToDelete).subscribe({
+        LibreriaServices.editoriales.removeSingle(idToDelete).subscribe({
           next: (res) => {
             setOpenAlert({
               state: true,

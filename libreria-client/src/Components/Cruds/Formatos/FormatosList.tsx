@@ -23,10 +23,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
 
 import Snackbar from "@mui/material/Snackbar";
-import MuiAlert, { AlertColor, AlertProps } from "@mui/material/Alert";
-import EditorialService from "../../../Services/editoriales.service";
+import MuiAlert, { AlertColor } from "@mui/material/Alert";
 import FormatoService from "../../../Services/formatos.service";
 import { Formato } from "../../../Models/Formato.model";
+import { LibreriaServices } from "../../../Services/services.factory";
 
 function FormatosList() {
   let navigate = useNavigate();
@@ -46,7 +46,8 @@ function FormatosList() {
 
   useEffect(() => {
     setFetching(true);
-    FormatoService.getAll()
+    LibreriaServices.formatos
+      .getAll()
       .subscribe({
         next: (res) => {
           setDatos(res);
@@ -79,7 +80,7 @@ function FormatosList() {
   const handleCloseModalConfirmacion = (result: boolean) => {
     if (result) {
       if (idToDelete) {
-        FormatoService.removeSingle(idToDelete).subscribe({
+        LibreriaServices.formatos.removeSingle(idToDelete).subscribe({
           next: (res) => {
             setOpenAlert({
               state: true,

@@ -1,67 +1,39 @@
 import axios from "axios";
 import { from, map, Observable, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
+import { CRUD } from "../Models/Crud.model";
 import { Formato } from "../Models/Formato.model";
 
-class FormatoService {
-  constructor() {}
+export default class FormatoService extends CRUD<Formato> {
+  CONTROLLER: string = "formatos";
 
-  /**
-   * GET que consulta los formatos
-   * @returns observable de todas los formatos
-   */
-  static getAll = (): Observable<Formato[]> => {
+  getAll = (): Observable<Formato[]> => {
     return ajax
-      .get<Formato[]>("http://localhost:8000/formatos")
+      .get<Formato[]>(`http://localhost:8000/${this.CONTROLLER}`)
       .pipe(map((x) => x.response));
   };
 
-  /**
-   * GET que consulta un formato particular
-   * @param id identificador del formato
-   * @returns observable del formato buscada
-   */
-  static getSingle = (id: number): Observable<Formato> => {
+  getSingle = (id: number): Observable<Formato> => {
     return ajax
-      .get<Formato>(`http://localhost:8000/formatos/${id}`)
+      .get<Formato>(`http://localhost:8000/${this.CONTROLLER}/${id}`)
       .pipe(map((x) => x.response));
   };
 
-  /**
-   * PUT que modifica un formato
-   * @param id identificador del formato a ser editado
-   * @param {Formato} newValue formato con valores modificados
-   * @returns observable del formato editado
-   */
-  static updateSingle = (
-    id: number,
-    newValue: Formato
-  ): Observable<Formato> => {
+  updateSingle = (id: number, newValue: Formato): Observable<Formato> => {
     return ajax
-      .put<Formato>(`http://localhost:8000/formatos/${id}`, newValue)
+      .put<Formato>(`http://localhost:8000/${this.CONTROLLER}/${id}`, newValue)
       .pipe(map((x) => x.response));
   };
 
-  /**
-   * POST que inserta un formato
-   * @param {Formato} newValue formato a ser insertado
-   * @returns observable del formato insertado
-   */
-  static createSingle = (newValue: Formato): Observable<Formato> => {
+  createSingle = (newValue: Formato): Observable<Formato> => {
     return ajax
-      .post<Formato>(`http://localhost:8000/formatos`, newValue)
+      .post<Formato>(`http://localhost:8000/${this.CONTROLLER}`, newValue)
       .pipe(map((x) => x.response));
   };
 
-  /**
-   * DELETE que elimina un formato
-   * @param id identificador de la formato a ser eliminado
-   */
-  static removeSingle = (id: number): Observable<any> => {
+  removeSingle = (id: number): Observable<any> => {
     return ajax
-      .delete<any>(`http://localhost:8000/formatos/${id}`)
+      .delete<any>(`http://localhost:8000/${this.CONTROLLER}/${id}`)
       .pipe(map((x) => x.response));
   };
 }
-
-export default FormatoService;

@@ -11,8 +11,11 @@ import {
   FormLabel,
   IconButton,
   Input,
+  InputLabel,
   LinearProgress,
+  MenuItem,
   Paper,
+  Select,
   Slider,
   TableContainer,
   TextField,
@@ -28,6 +31,8 @@ import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
+import { Editorial } from "../../../Models/Editorial.model";
+import { Formato } from "../../../Models/Formato.model";
 
 const InputMask = require("react-input-mask");
 
@@ -36,14 +41,17 @@ function LibrosForm() {
   const [fetching, setFetching] = useState(false);
   const { id: isbn } = useParams();
 
+  const [editoriales, setEditoriales] = useState<Editorial[]>([]);
+  const [formatos, setFormatos] = useState<Formato[]>([]);
+
   const [validForm, setValidForm] = useState<boolean>(false);
   const [libro, setLibro] = useState<LibroDTO>({
     isbn: "",
     titulo: "",
     cant_hojas: "",
     anio_edicion: new Date().getFullYear().toString(),
-    formato_id: "",
-    editorial_id: "",
+    formato: { nombre: "", formato_id: -1 },
+    editorial: { nombre: "", editorial_id: -1 },
     temas: [],
     autores: [],
   });
@@ -52,8 +60,8 @@ function LibrosForm() {
     titulo: "",
     cant_hojas: "",
     anio_edicion: new Date().getFullYear().toString(),
-    formato_id: "",
-    editorial_id: "",
+    formato: { nombre: "", formato_id: -1 },
+    editorial: { nombre: "", editorial_id: -1 },
     temas: [],
     autores: [],
   });
@@ -66,6 +74,44 @@ function LibrosForm() {
     type: "success",
     message: "",
   });
+
+  /* Obtengo editoriales */
+  useEffect(() => {
+    LibreriaServices.editoriales
+      .getAll()
+      .subscribe({
+        next: (res) => {
+          setEditoriales(res);
+        },
+        error: (err) =>
+          setOpenAlert({
+            state: true,
+            type: "error",
+            message: "No se pudo editar de forma satisfactoria",
+          }),
+      })
+      .add(() => {});
+    return () => {};
+  }, []);
+
+  /* Obtengo formatos */
+  useEffect(() => {
+    LibreriaServices.formatos
+      .getAll()
+      .subscribe({
+        next: (res) => {
+          setFormatos(res);
+        },
+        error: (err) =>
+          setOpenAlert({
+            state: true,
+            type: "error",
+            message: "No se pudo editar de forma satisfactoria",
+          }),
+      })
+      .add(() => {});
+    return () => {};
+  }, []);
 
   useEffect(() => {
     if (isbn) {
@@ -86,27 +132,6 @@ function LibrosForm() {
     }
     return () => {};
   }, [isbn]);
-
-  const checkValues = (): boolean => {
-    let res = true;
-
-    /* required */
-    if (libro.isbn == "") return false;
-    if (libro.cant_hojas == "") return false;
-    if (libro.anio_edicion == "") return false;
-    if (libro.formato_id == "") return false;
-    if (libro.editorial_id == "") return false;
-
-    /* different */
-    if (libro.cant_hojas != initialLibro.cant_hojas) return true;
-    if (libro.anio_edicion != initialLibro.anio_edicion) return true;
-    if (libro.formato_id != initialLibro.formato_id) return true;
-    if (libro.editorial_id != initialLibro.editorial_id) return true;
-
-    //TODO: chequear cambios en arrays..
-
-    return res;
-  };
 
   useEffect(() => {
     setValidForm(checkValues());
@@ -191,6 +216,20 @@ function LibrosForm() {
     }
   };
 
+  const handleEditorialChange = (event: any) => {
+    const editorialBuscada = editoriales.find(
+      (x) => x.editorial_id == event.target.value
+    );
+    if (editorialBuscada) setLibro({ ...libro, editorial: editorialBuscada });
+  };
+
+  const handleFormatoChange = (event: any) => {
+    const formatoBuscado = formatos.find(
+      (x) => x.formato_id == event.target.value
+    );
+    if (formatoBuscado) setLibro({ ...libro, formato: formatoBuscado });
+  };
+
   function handlePaginasChange(event: any) {
     if (isNaN(event.target.valueAsNumber) && event.nativeEvent.data !== null) {
       return;
@@ -200,6 +239,29 @@ function LibrosForm() {
       setLibro({ ...libro, cant_hojas: event.target.value });
     }
   }
+
+  const checkValues = (): boolean => {
+    /* required */
+    if (libro.isbn == "") return false;
+    if (libro.titulo == "") return false;
+    if (libro.cant_hojas == "") return false;
+    if (libro.anio_edicion == "") return false;
+    if (libro.formato.formato_id == -1) return false;
+    if (libro.editorial.editorial_id == -1) return false;
+
+    /* different */
+    if (libro.cant_hojas != initialLibro.cant_hojas) return true;
+    if (libro.titulo != initialLibro.titulo) return true;
+    if (libro.anio_edicion != initialLibro.anio_edicion) return true;
+    if (libro.formato.formato_id != initialLibro.formato?.formato_id)
+      return true;
+    if (libro.editorial.editorial_id != initialLibro.editorial?.editorial_id)
+      return true;
+
+    //TODO: chequear cambios en arrays..
+
+    return false;
+  };
 
   return (
     <>
@@ -279,7 +341,7 @@ function LibrosForm() {
                   minDate={dayjs(new Date(1800, 1))}
                   maxDate={dayjs(Date.now())}
                   value={libro.anio_edicion}
-                  onChange={handleChangeYear}
+                  onChange={(event: Dayjs | null) => handleChangeYear(event)}
                   renderInput={(params) => <TextField {...params} />}
                 />
               </LocalizationProvider>
@@ -296,6 +358,46 @@ function LibrosForm() {
                 value={libro.anio_edicion}
               /> */}
             </div>
+
+            <div className="flex-row">
+              <FormControl fullWidth>
+                <InputLabel>Editorial</InputLabel>
+                <Select
+                  id="select-editorial"
+                  value={libro.editorial.editorial_id}
+                  label="Editoriales"
+                  onChange={(event) => handleEditorialChange(event)}
+                >
+                  <MenuItem value={-1}></MenuItem>
+                  {editoriales.map((edi) => {
+                    return (
+                      <MenuItem key={edi.editorial_id} value={edi.editorial_id}>
+                        {edi.nombre}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
+              <FormControl fullWidth>
+                <InputLabel>Formato</InputLabel>
+                <Select
+                  id="select-formato"
+                  value={libro.formato.formato_id}
+                  label="Formatos"
+                  onChange={(event) => handleFormatoChange(event)}
+                >
+                  <MenuItem value={-1}></MenuItem>
+                  {formatos.map((form) => {
+                    return (
+                      <MenuItem key={form.formato_id} value={form.formato_id}>
+                        {form.nombre}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
+            </div>
+
             <div
               style={{ alignSelf: "flex-end", display: "flex", gap: "1rem" }}
             >

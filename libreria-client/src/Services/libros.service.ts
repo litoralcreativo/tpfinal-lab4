@@ -1,17 +1,17 @@
 import { map, Observable } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import { CRUD } from "../Models/Crud.model";
-import { Libro, LibroDTO } from "../Models/Libro.model";
+import { Libro, LibroDTO, LibroPayloadDTO } from "../Models/Libro.model";
 
-export class LibroService extends CRUD<Libro> {
+export default class LibroService extends CRUD<Libro> {
   parseToLibroDTO = (libro: Libro): LibroDTO => {
     let res: LibroDTO = {
       ...libro,
       isbn: libro.isbn.toString(),
       cant_hojas: libro.cant_hojas.toString(),
       anio_edicion: libro.anio_edicion.toString(),
-      editorial_id: libro.editorial_id.toString(),
-      formato_id: libro.formato_id.toString(),
+      editorial: libro.editorial,
+      formato: libro.formato,
     };
     return res;
   };
@@ -19,11 +19,25 @@ export class LibroService extends CRUD<Libro> {
   parseToLibro = (libro: LibroDTO): Libro => {
     let res: Libro = {
       ...libro,
-      isbn: Number.parseInt(libro.isbn),
+      isbn: Number.parseInt(libro.isbn.replace(/\s/g, "")),
       cant_hojas: Number.parseInt(libro.cant_hojas),
       anio_edicion: Number.parseInt(libro.anio_edicion),
-      editorial_id: Number.parseInt(libro.editorial_id),
-      formato_id: Number.parseInt(libro.formato_id),
+      editorial: libro.editorial,
+      formato: libro.formato,
+    };
+    return res;
+  };
+
+  parseToLibroPayloadDTO = (libro: Partial<Libro>): LibroPayloadDTO => {
+    let res: LibroPayloadDTO = {
+      titulo: libro.titulo!,
+      isbn: libro.isbn!,
+      cant_hojas: libro.cant_hojas!,
+      anio_edicion: libro.anio_edicion!,
+      editorial_id: libro.editorial!.editorial_id!,
+      formato_id: libro.formato!.formato_id,
+      autor_id: libro.autores!.map((x) => x.id_autor),
+      temas_id: libro.temas!.map((x) => x.tema_id),
     };
     return res;
   };
@@ -53,7 +67,10 @@ export class LibroService extends CRUD<Libro> {
 
   createSingle(newEntity: Partial<Libro>): Observable<Libro> {
     return ajax
-      .post<Libro>(`http://localhost:8000/${this.CONTROLLER}`, newEntity)
+      .post<Libro>(
+        `http://localhost:8000/${this.CONTROLLER}`,
+        this.parseToLibroPayloadDTO(newEntity)
+      )
       .pipe(map((x) => x.response));
   }
 
