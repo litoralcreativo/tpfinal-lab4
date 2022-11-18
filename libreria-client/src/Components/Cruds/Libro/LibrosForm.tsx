@@ -1,4 +1,7 @@
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Button,
   Container,
@@ -13,17 +16,20 @@ import {
   Input,
   InputLabel,
   LinearProgress,
+  ListItem,
   MenuItem,
   Paper,
   Select,
   Slider,
   TableContainer,
   TextField,
+  Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 import Snackbar from "@mui/material/Snackbar";
+import Chip from "@mui/material/Chip";
 import MuiAlert, { AlertColor, AlertProps } from "@mui/material/Alert";
 import { LibreriaServices } from "../../../Services/services.factory";
 import { Libro, LibroDTO } from "../../../Models/Libro.model";
@@ -33,18 +39,21 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
 import { Editorial } from "../../../Models/Editorial.model";
 import { Formato } from "../../../Models/Formato.model";
+import { Autor } from "../../../Models/Autor.model";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const InputMask = require("react-input-mask");
 
 function LibrosForm() {
   let navigate = useNavigate();
-  const [fetching, setFetching] = useState(false);
   const { id: isbn } = useParams();
 
+  const [fetching, setFetching] = useState(false);
   const [editoriales, setEditoriales] = useState<Editorial[]>([]);
   const [formatos, setFormatos] = useState<Formato[]>([]);
-
+  const [autores, setAutores] = useState<Autor[]>([]);
   const [validForm, setValidForm] = useState<boolean>(false);
+  const [openModal, setOpenModal] = useState(false);
   const [libro, setLibro] = useState<LibroDTO>({
     isbn: "",
     titulo: "",
@@ -113,6 +122,26 @@ function LibrosForm() {
     return () => {};
   }, []);
 
+  /* Obtengo autores */
+  useEffect(() => {
+    LibreriaServices.autores
+      .getAll()
+      .subscribe({
+        next: (res) => {
+          setAutores(res);
+        },
+        error: (err) =>
+          setOpenAlert({
+            state: true,
+            type: "error",
+            message: "No se pudo editar de forma satisfactoria",
+          }),
+      })
+      .add(() => {});
+    return () => {};
+  }, []);
+
+  /* Obtengo el libro */
   useEffect(() => {
     if (isbn) {
       setFetching(true);
@@ -133,12 +162,11 @@ function LibrosForm() {
     return () => {};
   }, [isbn]);
 
+  /* Chequeo validez cada vez que hay un cambio */
   useEffect(() => {
     setValidForm(checkValues());
     return () => {};
   }, [libro]);
-
-  const [openModal, setOpenModal] = useState(false);
 
   const handleCloseModalConfirmacion = (result: boolean) => {
     if (result) {
@@ -230,7 +258,7 @@ function LibrosForm() {
     if (formatoBuscado) setLibro({ ...libro, formato: formatoBuscado });
   };
 
-  function handlePaginasChange(event: any) {
+  const handlePaginasChange = (event: any) => {
     if (isNaN(event.target.valueAsNumber) && event.nativeEvent.data !== null) {
       return;
     }
@@ -238,7 +266,12 @@ function LibrosForm() {
     if (event.target.value.length <= 5) {
       setLibro({ ...libro, cant_hojas: event.target.value });
     }
-  }
+  };
+
+  const handleAutorRemove = (id: number) => {
+    const newList = libro.autores.filter((x) => x.id_autor !== id);
+    setLibro({ ...libro, autores: newList });
+  };
 
   const checkValues = (): boolean => {
     /* required */
@@ -268,46 +301,23 @@ function LibrosForm() {
       <TableContainer component={Paper}>
         <Box component="form" noValidate autoComplete="off">
           <div className="form-controls">
-            <h2>
-              {!isbn ? (
-                `Nuevo libro`
-              ) : (
-                <span>
-                  Edición del libro{" "}
-                  <span
-                    style={{
-                      fontFamily: "monospace",
-                      fontSize: "1.5em",
-                      fontWeight: 300,
-                    }}
-                  >
-                    {isbn}
-                  </span>
-                </span>
-              )}
-            </h2>
+            <h2>{!isbn ? `Nuevo libro` : `Edición`}</h2>
             <div className="flex-row">
-              {!isbn ? (
-                <>
-                  <InputMask
-                    disabled={fetching}
-                    mask="999 9 99 999999 9"
-                    className="isbn-input"
-                    alwaysShowMask={false}
-                    maskPlaceholder=" "
-                    value={libro.isbn}
-                    id="isbn"
-                    label="ISBN"
-                    onChange={(event: any) =>
-                      setLibro({ ...libro, isbn: event.target.value })
-                    }
-                  >
-                    <TextField />
-                  </InputMask>
-                </>
-              ) : (
-                <></>
-              )}
+              <InputMask
+                disabled={fetching || isbn}
+                mask="999 9 99 999999 9"
+                className="isbn-input"
+                alwaysShowMask={false}
+                maskPlaceholder=" "
+                value={libro.isbn}
+                id="isbn"
+                label="ISBN"
+                onChange={(event: any) =>
+                  setLibro({ ...libro, isbn: event.target.value })
+                }
+              >
+                <TextField />
+              </InputMask>
               <TextField
                 disabled={fetching}
                 type="text"
@@ -396,6 +406,61 @@ function LibrosForm() {
                   })}
                 </Select>
               </FormControl>
+            </div>
+
+            <div className="flex-row">
+              <div>
+                <Accordion>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1a-content"
+                    id="panel1a-header"
+                  >
+                    <Typography>Autores</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        gap: 1,
+                      }}
+                    >
+                      {autores.map((data) => (
+                        <Chip
+                          key={data.id_autor}
+                          label={`${data.apellido}, ${data.nombre}`}
+                          onDelete={() => handleAutorRemove(data.id_autor)}
+                        />
+                      ))}
+                    </Box>
+                  </AccordionDetails>
+                </Accordion>
+                <Accordion>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel2a-content"
+                    id="panel2a-header"
+                  >
+                    <Typography>Temas</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        gap: 1,
+                      }}
+                    >
+                      {autores.map((data) => (
+                        <Chip
+                          key={data.id_autor}
+                          label={`${data.apellido}, ${data.nombre}`}
+                          onDelete={() => handleAutorRemove(data.id_autor)}
+                        />
+                      ))}
+                    </Box>
+                  </AccordionDetails>
+                </Accordion>
+              </div>
             </div>
 
             <div

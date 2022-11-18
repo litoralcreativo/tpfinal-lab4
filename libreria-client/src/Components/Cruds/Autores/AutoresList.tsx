@@ -26,6 +26,7 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertColor, AlertProps } from "@mui/material/Alert";
 import { Autor } from "../../../Models/Autor.model";
 import AutorService from "../../../Services/autores.service";
+import { LibreriaServices } from "../../../Services/services.factory";
 
 function AutoresList() {
   let navigate = useNavigate();
@@ -45,7 +46,8 @@ function AutoresList() {
 
   useEffect(() => {
     setFetching(true);
-    AutorService.getAll()
+    LibreriaServices.autores
+      .getAll()
       .subscribe({
         next: (res) => {
           setDatos(res);
@@ -78,7 +80,7 @@ function AutoresList() {
   const handleCloseModalConfirmacion = (result: boolean) => {
     if (result) {
       if (idToDelete) {
-        AutorService.removeSingle(idToDelete).subscribe({
+        LibreriaServices.autores.removeSingle(idToDelete).subscribe({
           next: (res) => {
             setOpenAlert({
               state: true,

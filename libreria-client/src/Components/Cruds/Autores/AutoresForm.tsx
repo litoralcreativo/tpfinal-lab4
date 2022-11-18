@@ -32,6 +32,7 @@ import { max, timer } from "rxjs";
 import { Autor, AutorDTO } from "../../../Models/Autor.model";
 import AutorService from "../../../Services/autores.service";
 import { isInt16Array } from "util/types";
+import { LibreriaServices } from "../../../Services/services.factory";
 
 function AutoresForm() {
   let navigate = useNavigate();
@@ -62,13 +63,16 @@ function AutoresForm() {
   useEffect(() => {
     if (id) {
       setFetching(true);
-      AutorService.getSingle(Number.parseInt(id))
+      LibreriaServices.autores
+        .getSingle(Number.parseInt(id))
         .subscribe({
           next: (res) => {
             const formatoFetched = res;
             if (formatoFetched) {
-              setAutor(AutorService.parseToAutor(formatoFetched));
-              setInitialAutor(AutorService.parseToAutor(formatoFetched));
+              setAutor(LibreriaServices.autores.parseToAutor(formatoFetched));
+              setInitialAutor(
+                LibreriaServices.autores.parseToAutor(formatoFetched)
+              );
             }
           },
         })
@@ -108,7 +112,11 @@ function AutoresForm() {
     if (result) {
       /* edicion */
       if (id) {
-        AutorService.updateSingle(Number.parseInt(id), autor)
+        LibreriaServices.autores
+          .updateSingle(
+            Number.parseInt(id),
+            LibreriaServices.autores.parseToAutorDTO(autor)
+          )
           .subscribe({
             next: (res) => {
               setOpenAlert({
@@ -117,8 +125,8 @@ function AutoresForm() {
                 message: "Se pudo editar satisfactoriamente",
               });
               if (res) {
-                setAutor(AutorService.parseToAutor(res));
-                setInitialAutor(AutorService.parseToAutor(res));
+                setAutor(LibreriaServices.autores.parseToAutor(res));
+                setInitialAutor(LibreriaServices.autores.parseToAutor(res));
               }
             },
             error: (err) => {
@@ -136,7 +144,8 @@ function AutoresForm() {
           });
       } else {
         /* alta */
-        AutorService.createSingle(autor)
+        LibreriaServices.autores
+          .createSingle(LibreriaServices.autores.parseToAutorDTO(autor))
           .subscribe({
             next: (res) => {
               setOpenAlert({
