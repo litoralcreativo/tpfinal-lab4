@@ -4,8 +4,9 @@ from sqlalchemy.orm import Session
 from starlette import status
 from repositories.formato_repository import FormatoRepository
 from schemas.formato_schemas import FormatoDTO,FormatoNoId,FormatoForUpdate
+from schemas.libro_schemas import LibroDTO
 from typing import List
-from utils.creates import create_formato,create_list_formato
+from utils.creates import create_formato,create_list_formato,create_list_libro
 
 formato_router =  APIRouter(prefix='/formatos',tags=['Formatos'])
 formato_repository = FormatoRepository()
@@ -54,3 +55,10 @@ def delete_formato(id:int,db:Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail= 'No se encontró el formato')
     
     return create_formato(result)
+
+@formato_router.get('/{id}/libros}',response_model=List[LibroDTO])
+def get_libros_by_id(id:int,db:Session = Depends(get_db)):
+    result = formato_repository.get_libros_by_id(db,id)
+    if result is None:
+        return HTTPException(status_code= status.HTTP_204_NO_CONTENT,detail= 'No hay libros asociados')
+    return create_list_libro(result,db)

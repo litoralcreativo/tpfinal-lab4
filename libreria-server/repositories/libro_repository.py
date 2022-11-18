@@ -9,6 +9,7 @@ from repositories.editorial_repository import EditorialRepository
 from repositories.formato_repository import FormatoRepository
 from typing import List
 from utils.list import create_int_list
+from utils.creates import create_autor,create_formato
 
 autor_respository = AutorRepository()
 temas_repository = TemaRepository()
@@ -42,11 +43,15 @@ class LibroRepository:
         result = self.get_by_isbn(db,nuevo_libro.isbn)
         return result
 
-    def get_by_isbn(self,db:Session,isbn:int) -> Libro:
-            result = db.execute(select(Libro).where(Libro.isbn == isbn)).scalar()
-            return result
+    def get_by_isbn(self,db:Session,isbn:str) -> Libro:    
+        if isbn.isnumeric() == False:
+            return ValueError('El ISBN debe ser un número entre 11 y 13 digitos')
+        result = db.execute(select(Libro).where(Libro.isbn == isbn)).scalar()
+        return result
 
-    def update_libro(self,db:Session,datos:LibroForUpdate,isbn:int) -> Libro:
+    def update_libro(self,db:Session,datos:LibroForUpdate,isbn:str) -> Libro:
+        if isbn.isnumeric() == False:
+            return ValueError('El ISBN debe ser un número entre 11 y 13 digitos')
         libro_buscado = db.execute(select(Libro).where(Libro.isbn == isbn)).scalar()
         print(f'Libro buscado en Controller = {libro_buscado}')
         if libro_buscado is None:
@@ -69,7 +74,9 @@ class LibroRepository:
         db.commit()
         return self.get_by_isbn(db,isbn)
 
-    def delete_libro(self,isbn:int,db:Session) -> Libro:
+    def delete_libro(self,isbn:str,db:Session) -> Libro:
+        if isbn.isnumeric() == False:
+            return ValueError('El ISBN debe ser un número entre 11 y 13 digitos')
         libro_buscado = self.get_by_isbn(db,isbn)
         if libro_buscado is None:
             return None

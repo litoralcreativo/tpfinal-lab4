@@ -18,6 +18,7 @@ from schemas.editorial_schemas import EditorialDTO
 from repositories.editorial_repository import EditorialRepository
 from repositories.formato_repository import FormatoRepository
 
+# METODOS PARA CREACION DE ENTIDADES INDIVIDUALES O LISTAS
 
 def create_libro(lib:Libro,db:Session) -> LibroDTO | None:
     """Crea un LibroDTO a partir de un Model Libro
@@ -38,8 +39,8 @@ def create_libro(lib:Libro,db:Session) -> LibroDTO | None:
                 anio_edicion = lib.anio_edicion,
                 titulo = lib.titulo,
                 cant_hojas = lib.cant_hojas,
-                editorial = editorial_repository.get_by_id(db,lib.editorial_id),
-                formato = formato_repository.get_by_id(db,lib.formato_id),
+                editorial = create_editorial(editorial_repository.get_by_id(db,lib.editorial_id)),
+                formato = create_formato(formato_repository.get_by_id(db,lib.formato_id)),
                 temas = lib.temas,
                 autores = lib.autores
             )

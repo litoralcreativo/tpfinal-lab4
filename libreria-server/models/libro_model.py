@@ -22,7 +22,7 @@ class Libro(BaseBd):
     """Modelo Para ORM
 
     Atributos:
-        isbn = Integer (PK)
+        isbn = String(13) (PK)
 
         titulo = String NOT NULL
 
@@ -40,12 +40,12 @@ class Libro(BaseBd):
 
     """
     __tablename__ = "libro"
-    isbn = Column(Integer,primary_key=True,autoincrement=False)
+    isbn = Column(String(13),primary_key=True)
     titulo = Column(String(255),nullable=False)
     cant_hojas = Column(Integer,default=0)
     anio_edicion = Column(Integer,nullable=False)
-    editorial_id = Column(Integer,ForeignKey("editorial.editorial_id",onupdate="CASCADE"),nullable=False)
-    formato_id = Column(Integer,ForeignKey("formato.formato_id",onupdate="CASCADE"),nullable=False)
+    editorial_id = Column(Integer,ForeignKey("editorial.editorial_id",onupdate="CASCADE",ondelete='CASCADE'),nullable=False)
+    formato_id = Column(Integer,ForeignKey("formato.formato_id",onupdate="CASCADE",ondelete='CASCADE'),nullable=False)
     temas = relationship("Tema",secondary=tema_libro,backref='libro')
     autores = relationship("Autor",secondary=autor_libro,backref='libro')
 

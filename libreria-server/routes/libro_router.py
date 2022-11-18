@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException,Path
 from config.db import get_db
 from sqlalchemy.orm import Session
 from starlette import status
@@ -31,7 +31,7 @@ def new_libro(datos:LibroBase,db:Session = Depends(get_db)) -> LibroDTO:
         raise HTTPException(status_code= status.HTTP_400_BAD_REQUEST, detail= f'Error al crear el libro, revise los datos. {exception_msg}')
 
 @libro_router.get('/{isbn}',response_model=LibroDTO)
-def get_by_isbn(isbn:int,db:Session = Depends(get_db)) -> LibroDTO:
+def get_by_isbn(isbn:str = Path(min_length=11,max_length=13),db:Session = Depends(get_db)) -> LibroDTO:
         result = libro_repository.get_by_isbn(db,isbn)
         if result is None:
             raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail='No se pudo encontrar el Libro')
@@ -39,7 +39,7 @@ def get_by_isbn(isbn:int,db:Session = Depends(get_db)) -> LibroDTO:
             return create_libro(result,db)
 
 @libro_router.put('/{isbn}',response_model=LibroDTO)
-def update_libro(isbn:int,datos:LibroForUpdate,db:Session = Depends(get_db)):
+def update_libro( datos:LibroForUpdate, isbn:str = Path(min_length=11,max_length=13),db:Session = Depends(get_db)):
     try:
         result = libro_repository.update_libro(db,datos,isbn)
         if result is None:
@@ -50,10 +50,11 @@ def update_libro(isbn:int,datos:LibroForUpdate,db:Session = Depends(get_db)):
         raise exc
     except Exception as e:
         exception_msg = f'Type: {type(e)}. Args: {e.args}. {e}'
-        raise HTTPException(status_code=status.HTTP_304_NOT_MODIFIED,detail=f'Hubo un error al intentar modificar el libro. {exception_msg}')
+        print(exception_msg)
+        raise HTTPException(status_code=status.HTTP_304_NOT_MODIFIED, detail= f'Hubo un error al intentar modificar el libro. {exception_msg}')
 
 @libro_router.delete('/{isbn}',response_model=LibroDTO)
-def delete_libro(isbn:int,db:Session = Depends(get_db)) -> LibroDTO:
+def delete_libro(isbn:str = Path(min_length=11,max_length=13),db:Session = Depends(get_db)) -> LibroDTO:
     try:
         libro_borrado = libro_repository.delete_libro(isbn,db)
         if libro_borrado is None:

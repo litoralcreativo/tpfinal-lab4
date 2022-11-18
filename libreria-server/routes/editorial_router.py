@@ -4,8 +4,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from repositories.editorial_repository import EditorialRepository
 from schemas.editorial_schemas import EditorialDTO, EditorialNoId, EditorialForUpdate
+from schemas.libro_schemas import LibroDTO
 from starlette import status
-from utils.creates import create_editorial,create_list_editorial
+from utils.creates import create_editorial,create_list_editorial,create_list_libro
 from typing import List
 
 editorial_router =  APIRouter(prefix='/editoriales',tags=['Editoriales'])
@@ -58,3 +59,10 @@ def delete_editorial(id:int,db:Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,detail= "No se puede eliminar la editorial ya que esta asociada a otra tabla")
     
     return create_editorial(result)
+
+@editorial_router.get('/{id}/libros}',response_model=List[LibroDTO])
+def get_libros_by_id(id:int,db:Session = Depends(get_db)):
+    result = editorial_repository.get_libros_by_id(db,id)
+    if result is None:
+        return HTTPException(status_code= status.HTTP_204_NO_CONTENT,detail= 'No hay libros asociados')
+    return create_list_libro(result,db)

@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select,desc
+from sqlalchemy import select,desc,func
 from models.formato_model import Formato
 from schemas.formato_schemas import FormatoNoId,FormatoForUpdate
 from typing import List
+from models.libro_model import Libro
 
 class FormatoRepository:
 
@@ -35,3 +36,7 @@ class FormatoRepository:
         db.delete(formato)
         db.commit()
         return formato
+
+    def get_libros_by_id(self,db:Session,id:int) -> List[Libro]:
+        result = db.execute(select(Libro).where(Libro.formato_id == id)).scalars().all()
+        return result

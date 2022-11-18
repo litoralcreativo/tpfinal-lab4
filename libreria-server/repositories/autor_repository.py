@@ -37,7 +37,7 @@ class AutorRepository:
         Return:
             Autor (Objeto de autor_model)
         """
-        nuevo_autor: Autor = Autor(**datos.dict())
+        nuevo_autor = Autor(dni= datos.dni, nombre = datos.nombre, apellido = datos.apellido)
         db.add(nuevo_autor)
         db.commit()
         result =  db.execute(select(Autor).order_by(desc(Autor.id_autor))).scalars().first()

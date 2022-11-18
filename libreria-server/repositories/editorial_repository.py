@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select,desc
 from models.editorial_model import Editorial
+from models.libro_model import Libro
 from schemas.editorial_schemas import EditorialNoId, EditorialForUpdate,EditorialDTO
 from typing import List
 
@@ -39,4 +40,9 @@ class EditorialRepository:
         db.delete(editorial)
         db.commit()
         return editorial
+
+    
+    def get_libros_by_id(self,db:Session,id:int) -> List[Libro]:
+        result = db.execute(select(Libro).where(Libro.editorial_id == id)).scalars().all()
+        return result
         
