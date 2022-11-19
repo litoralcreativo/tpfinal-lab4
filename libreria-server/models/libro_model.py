@@ -6,16 +6,16 @@ from sqlalchemy.orm import relationship
 tema_libro = Table(
     "temas_libros",
     BaseBd.metadata,
-    Column("tema_id", ForeignKey("tema.tema_id"), primary_key=True),
-    Column("libro_isbn", ForeignKey("libro.isbn"), primary_key=True)
+    Column("tema_id", ForeignKey("tema.tema_id", ondelete="CASCADE"), primary_key=True),
+    Column("libro_isbn", ForeignKey("libro.isbn", ondelete="CASCADE"), primary_key=True)
     )
 
 # Tabla derivada para asociacion N a N de libros y autores
 autor_libro = Table(
     "autores_libros",
     BaseBd.metadata,
-    Column("autor_id", ForeignKey("autor.id_autor"), primary_key=True),
-    Column("libro_isbn", ForeignKey("libro.isbn"), primary_key=True)
+    Column("autor_id", ForeignKey("autor.id_autor", ondelete="CASCADE"), primary_key=True),
+    Column("libro_isbn", ForeignKey("libro.isbn",  ondelete="CASCADE"), primary_key=True)
 )
 
 class Libro(BaseBd):
@@ -46,8 +46,8 @@ class Libro(BaseBd):
     anio_edicion = Column(Integer,nullable=False)
     editorial_id = Column(Integer,ForeignKey("editorial.editorial_id",onupdate="CASCADE",ondelete='CASCADE'),nullable=False)
     formato_id = Column(Integer,ForeignKey("formato.formato_id",onupdate="CASCADE",ondelete='CASCADE'),nullable=False)
-    temas = relationship("Tema",secondary=tema_libro,backref='libro')
-    autores = relationship("Autor",secondary=autor_libro,backref='libro')
+    temas = relationship("Tema",secondary=tema_libro,backref='libro', cascade="all, delete")
+    autores = relationship("Autor",secondary=autor_libro,backref='libro', cascade="all, delete")
 
     def __repr__(self) -> str:
         return f'<Libro> temas: {self.temas}, autores: {self.autores}'

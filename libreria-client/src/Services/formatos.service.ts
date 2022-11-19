@@ -3,6 +3,7 @@ import { from, map, Observable, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import { CRUD } from "../Models/Crud.model";
 import { Formato } from "../Models/Formato.model";
+import { Libro } from "../Models/Libro.model";
 
 export default class FormatoService extends CRUD<Formato> {
   CONTROLLER: string = "formatos";
@@ -34,6 +35,12 @@ export default class FormatoService extends CRUD<Formato> {
   removeSingle = (id: number): Observable<any> => {
     return ajax
       .delete<any>(`http://localhost:8000/${this.CONTROLLER}/${id}`)
+      .pipe(map((x) => x.response));
+  };
+
+  getLibrosByFormato = (id: number): Observable<Libro[]> => {
+    return ajax
+      .get<Libro[]>(`http://localhost:8000/${this.CONTROLLER}/${id}/libros`)
       .pipe(map((x) => x.response));
   };
 }

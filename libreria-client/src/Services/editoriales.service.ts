@@ -3,6 +3,7 @@ import { from, map, Observable, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import { CRUD } from "../Models/Crud.model";
 import { Editorial } from "../Models/Editorial.model";
+import { Libro } from "../Models/Libro.model";
 
 export default class EditorialService extends CRUD<Editorial> {
   CONTROLLER: string = "editoriales";
@@ -37,6 +38,12 @@ export default class EditorialService extends CRUD<Editorial> {
   removeSingle = (id: number): Observable<any> => {
     return ajax
       .delete<any>(`http://localhost:8000/${this.CONTROLLER}/${id}`)
+      .pipe(map((x) => x.response));
+  };
+
+  getLibrosByEditorial = (id: number): Observable<Libro[]> => {
+    return ajax
+      .get<Libro[]>(`http://localhost:8000/${this.CONTROLLER}/${id}/libros`)
       .pipe(map((x) => x.response));
   };
 }

@@ -56,7 +56,7 @@ def delete_formato(id:int,db:Session = Depends(get_db)):
     
     return create_formato(result)
 
-@formato_router.get('/{id}/libros}',response_model=List[LibroDTO])
+@formato_router.get('/{id}/libros',response_model=List[LibroDTO])
 def get_libros_by_id(id:int,db:Session = Depends(get_db)):
     result = formato_repository.get_libros_by_id(db,id)
     if result is None:

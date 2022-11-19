@@ -60,7 +60,7 @@ def delete_editorial(id:int,db:Session = Depends(get_db)):
     
     return create_editorial(result)
 
-@editorial_router.get('/{id}/libros}',response_model=List[LibroDTO])
+@editorial_router.get('/{id}/libros',response_model=List[LibroDTO])
 def get_libros_by_id(id:int,db:Session = Depends(get_db)):
     result = editorial_repository.get_libros_by_id(db,id)
     if result is None:

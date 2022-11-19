@@ -1,4 +1,7 @@
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Button,
   Dialog,
   DialogActions,
@@ -7,17 +10,23 @@ import {
   DialogTitle,
   IconButton,
   LinearProgress,
+  List,
+  ListItem,
+  ListItemText,
   Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
+  Typography,
   TableRow,
+  Badge,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
@@ -27,6 +36,8 @@ import MuiAlert, { AlertColor } from "@mui/material/Alert";
 import FormatoService from "../../../Services/formatos.service";
 import { Formato } from "../../../Models/Formato.model";
 import { LibreriaServices } from "../../../Services/services.factory";
+import { Libro } from "../../../Models/Libro.model";
+import { LoadingButton } from "@mui/lab";
 
 function FormatosList() {
   let navigate = useNavigate();
@@ -43,6 +54,10 @@ function FormatosList() {
     message: "",
   });
   const [idToDelete, setIdToDelete] = useState<number | null>(null);
+  const [librosAsociados, setLibrosAsociados] = useState<{
+    fetching: boolean;
+    libros: Libro[];
+  }>({ fetching: false, libros: [] });
 
   useEffect(() => {
     setFetching(true);
@@ -74,6 +89,12 @@ function FormatosList() {
 
   const handleOpenModalConfirmacion = (id: number) => {
     setIdToDelete(id);
+    setLibrosAsociados({ fetching: true, libros: [] });
+    LibreriaServices.formatos.getLibrosByFormato(id).subscribe({
+      next: (res) => {
+        setLibrosAsociados({ fetching: false, libros: res });
+      },
+    });
     setOpenModal(true);
   };
 
@@ -161,6 +182,7 @@ function FormatosList() {
           </TableBody>
         </Table>
       </TableContainer>
+
       <Dialog
         open={openModal}
         onClose={() => handleCloseModalConfirmacion(false)}
@@ -170,21 +192,93 @@ function FormatosList() {
         <DialogTitle id="alert-dialog-title">{"Confirmación"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
+            {librosAsociados.libros.length > 0 ? (
+              <>
+                {librosAsociados.libros.length == 1 ? (
+                  <strong>{`Si elimina este foramto se eliminará tambien el libro que se encuentra asociado al mismo.`}</strong>
+                ) : (
+                  <strong>{`Si elimina este formato se eliminaran tambien los libros que se encuentran asociados al mismo.`}</strong>
+                )}
+              </>
+            ) : (
+              <></>
+            )}{" "}
             Esta seguro que desea eliminar este formato?
+            {librosAsociados.libros.length > 0 ? (
+              <>
+                <br />
+                <br />
+                <Accordion>
+                  <Badge
+                    invisible={librosAsociados.libros.length == 0}
+                    badgeContent={librosAsociados.libros.length}
+                    color="error"
+                    anchorOrigin={{
+                      horizontal: "left",
+                      vertical: "top",
+                    }}
+                  >
+                    <AccordionSummary
+                      aria-controls="panel1a-content"
+                      id="panel1a-header"
+                    >
+                      <Typography>Libros asociados a este formato</Typography>
+                    </AccordionSummary>
+                  </Badge>
+                  <AccordionDetails>
+                    <List
+                      sx={{
+                        width: "100%",
+                        maxWidth: 360,
+                        bgcolor: "background.paper",
+                        position: "relative",
+                        overflow: "auto",
+                        maxHeight: 300,
+                        "& ul": { padding: 0 },
+                      }}
+                      subheader={<li />}
+                    >
+                      {librosAsociados.libros.map((libro) => (
+                        <ListItem key={libro.isbn}>
+                          <ListItemText
+                            primary={libro.titulo}
+                            secondary={
+                              libro.autores.length > 0 ? (
+                                <>
+                                  {libro.autores[0].nombre}
+                                  {", "}
+                                  {libro.autores[0].apellido}
+                                </>
+                              ) : (
+                                <></>
+                              )
+                            }
+                          />
+                        </ListItem>
+                      ))}
+                    </List>
+                  </AccordionDetails>
+                </Accordion>
+              </>
+            ) : (
+              <></>
+            )}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => handleCloseModalConfirmacion(false)}>
             Cancelar
           </Button>
-          <Button
-            variant="contained"
+          <LoadingButton
             onClick={() => handleCloseModalConfirmacion(true)}
-            autoFocus
             color="error"
+            loading={librosAsociados.fetching}
+            variant={librosAsociados.fetching ? "outlined" : "contained"}
+            loadingPosition="start"
+            startIcon={<DeleteIcon />}
           >
             Confirmar
-          </Button>
+          </LoadingButton>
         </DialogActions>
       </Dialog>
       <Snackbar
