@@ -25,8 +25,8 @@ import { useNavigate } from "react-router-dom";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertColor, AlertProps } from "@mui/material/Alert";
 import { Formato } from "../../../Models/Formato.model";
-import TemaService from "../../../Services/temas.service";
 import { Tema } from "../../../Models/Tema.model";
+import { LibreriaServices } from "../../../Services/services.factory";
 
 function TemasList() {
   let navigate = useNavigate();
@@ -46,7 +46,8 @@ function TemasList() {
 
   useEffect(() => {
     setFetching(true);
-    TemaService.getAll()
+    LibreriaServices.temas
+      .getAll()
       .subscribe({
         next: (res) => {
           setDatos(res);
@@ -79,7 +80,7 @@ function TemasList() {
   const handleCloseModalConfirmacion = (result: boolean) => {
     if (result) {
       if (idToDelete) {
-        TemaService.removeSingle(idToDelete).subscribe({
+        LibreriaServices.temas.removeSingle(idToDelete).subscribe({
           next: (res) => {
             setOpenAlert({
               state: true,

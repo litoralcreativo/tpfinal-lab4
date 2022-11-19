@@ -22,7 +22,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertColor, AlertProps } from "@mui/material/Alert";
 import { Tema } from "../../../Models/Tema.model";
-import TemaService from "../../../Services/temas.service";
+import { LibreriaServices } from "../../../Services/services.factory";
 
 function TemasForm() {
   let navigate = useNavigate();
@@ -51,7 +51,8 @@ function TemasForm() {
   useEffect(() => {
     if (id) {
       setFetching(true);
-      TemaService.getSingle(Number.parseInt(id))
+      LibreriaServices.temas
+        .getSingle(Number.parseInt(id))
         .subscribe({
           next: (res) => {
             const formatoFetched = res;
@@ -90,7 +91,8 @@ function TemasForm() {
     if (result) {
       /* edicion */
       if (id) {
-        TemaService.updateSingle(Number.parseInt(id), tema)
+        LibreriaServices.temas
+          .updateSingle(Number.parseInt(id), tema)
           .subscribe({
             next: (res) => {
               setOpenAlert({
@@ -118,7 +120,8 @@ function TemasForm() {
           });
       } else {
         /* alta */
-        TemaService.createSingle(tema)
+        LibreriaServices.temas
+          .createSingle(tema)
           .subscribe({
             next: (res) => {
               setOpenAlert({

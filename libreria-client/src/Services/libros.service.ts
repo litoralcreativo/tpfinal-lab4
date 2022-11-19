@@ -57,20 +57,16 @@ export default class LibroService extends CRUD<Libro> {
   }
 
   updateSingle(id: number, editedEntity: Partial<Libro>): Observable<Libro> {
+    const parsed = this.parseToLibroPayloadDTO(editedEntity);
     return ajax
-      .put<Libro>(
-        `http://localhost:8000/${this.CONTROLLER}/${id}`,
-        editedEntity
-      )
+      .put<Libro>(`http://localhost:8000/${this.CONTROLLER}/${id}`, parsed)
       .pipe(map((x) => x.response));
   }
 
   createSingle(newEntity: Partial<Libro>): Observable<Libro> {
+    const parsed = this.parseToLibroPayloadDTO(newEntity);
     return ajax
-      .post<Libro>(
-        `http://localhost:8000/${this.CONTROLLER}`,
-        this.parseToLibroPayloadDTO(newEntity)
-      )
+      .post<Libro>(`http://localhost:8000/${this.CONTROLLER}`, parsed)
       .pipe(map((x) => x.response));
   }
 

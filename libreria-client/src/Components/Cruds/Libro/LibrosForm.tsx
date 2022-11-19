@@ -10,17 +10,23 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Fab,
   FormControl,
   FormLabel,
+  Grid,
   IconButton,
   Input,
   InputLabel,
   LinearProgress,
+  List,
   ListItem,
+  ListItemButton,
+  ListItemText,
   MenuItem,
   Paper,
   Select,
   Slider,
+  styled,
   TableContainer,
   TextField,
   Typography,
@@ -41,6 +47,8 @@ import { Editorial } from "../../../Models/Editorial.model";
 import { Formato } from "../../../Models/Formato.model";
 import { Autor } from "../../../Models/Autor.model";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Tema } from "../../../Models/Tema.model";
+import AddIcon from "@mui/icons-material/Add";
 
 const InputMask = require("react-input-mask");
 
@@ -52,8 +60,13 @@ function LibrosForm() {
   const [editoriales, setEditoriales] = useState<Editorial[]>([]);
   const [formatos, setFormatos] = useState<Formato[]>([]);
   const [autores, setAutores] = useState<Autor[]>([]);
+  const [temas, setTemas] = useState<Tema[]>([]);
   const [validForm, setValidForm] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState(false);
+
+  const [modalAutores, setModalAutores] = useState(false);
+  const [modalTemas, setModalTemas] = useState(false);
+
   const [libro, setLibro] = useState<LibroDTO>({
     isbn: "",
     titulo: "",
@@ -129,6 +142,25 @@ function LibrosForm() {
       .subscribe({
         next: (res) => {
           setAutores(res);
+        },
+        error: (err) =>
+          setOpenAlert({
+            state: true,
+            type: "error",
+            message: "No se pudo editar de forma satisfactoria",
+          }),
+      })
+      .add(() => {});
+    return () => {};
+  }, []);
+
+  /* Obtengo autores */
+  useEffect(() => {
+    LibreriaServices.temas
+      .getAll()
+      .subscribe({
+        next: (res) => {
+          setTemas(res);
         },
         error: (err) =>
           setOpenAlert({
@@ -268,9 +300,22 @@ function LibrosForm() {
     }
   };
 
+  const handleAutorAdd = (autor: Autor) => {
+    setLibro({ ...libro, autores: [...libro.autores, autor] });
+    setModalAutores(libro.autores.length !== autores.length);
+  };
   const handleAutorRemove = (id: number) => {
     const newList = libro.autores.filter((x) => x.id_autor !== id);
     setLibro({ ...libro, autores: newList });
+  };
+
+  const handleTemaAdd = (tema: Tema) => {
+    setLibro({ ...libro, temas: [...libro.temas, tema] });
+    setModalTemas(libro.temas.length !== temas.length);
+  };
+  const handleTemaRemove = (id: number) => {
+    const newList = libro.temas.filter((x) => x.tema_id !== id);
+    setLibro({ ...libro, temas: newList });
   };
 
   const checkValues = (): boolean => {
@@ -302,167 +347,201 @@ function LibrosForm() {
         <Box component="form" noValidate autoComplete="off">
           <div className="form-controls">
             <h2>{!isbn ? `Nuevo libro` : `Edición`}</h2>
-            <div className="flex-row">
-              <InputMask
-                disabled={fetching || isbn}
-                mask="999 9 99 999999 9"
-                className="isbn-input"
-                alwaysShowMask={false}
-                maskPlaceholder=" "
-                value={libro.isbn}
-                id="isbn"
-                label="ISBN"
-                onChange={(event: any) =>
-                  setLibro({ ...libro, isbn: event.target.value })
-                }
-              >
-                <TextField />
-              </InputMask>
-              <TextField
-                disabled={fetching}
-                type="text"
-                id="titulo"
-                label="Titulo"
-                onChange={(event) =>
-                  setLibro({ ...libro, titulo: event.target.value })
-                }
-                value={libro.titulo}
-              />
-            </div>
-
-            <div className="flex-row">
-              <TextField
-                disabled={fetching}
-                type="number"
-                id="cant_hojas"
-                inputProps={{
-                  min: 1,
-                  max: 99999,
-                }}
-                label="Cantidad de páginas"
-                onChange={(event: any) => handlePaginasChange(event)}
-                value={libro.cant_hojas}
-              />
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DesktopDatePicker
-                  views={["year"]}
-                  label="Año"
-                  inputFormat="YYYY"
-                  minDate={dayjs(new Date(1800, 1))}
-                  maxDate={dayjs(Date.now())}
-                  value={libro.anio_edicion}
-                  onChange={(event: Dayjs | null) => handleChangeYear(event)}
-                  renderInput={(params) => <TextField {...params} />}
-                />
-              </LocalizationProvider>
-              {/* <TextField
-                disabled={fetching}
-                type="text"
-                id="anio_edicion"
-                inputProps={{
-                  min: 1,
-                  max: 99999,
-                }}
-                label="Año de edición"
-                onChange={(event: any) => handleAnioChange(event)}
-                value={libro.anio_edicion}
-              /> */}
-            </div>
-
-            <div className="flex-row">
-              <FormControl fullWidth>
-                <InputLabel>Editorial</InputLabel>
-                <Select
-                  id="select-editorial"
-                  value={libro.editorial.editorial_id}
-                  label="Editoriales"
-                  onChange={(event) => handleEditorialChange(event)}
-                >
-                  <MenuItem value={-1}></MenuItem>
-                  {editoriales.map((edi) => {
-                    return (
-                      <MenuItem key={edi.editorial_id} value={edi.editorial_id}>
-                        {edi.nombre}
-                      </MenuItem>
-                    );
-                  })}
-                </Select>
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel>Formato</InputLabel>
-                <Select
-                  id="select-formato"
-                  value={libro.formato.formato_id}
-                  label="Formatos"
-                  onChange={(event) => handleFormatoChange(event)}
-                >
-                  <MenuItem value={-1}></MenuItem>
-                  {formatos.map((form) => {
-                    return (
-                      <MenuItem key={form.formato_id} value={form.formato_id}>
-                        {form.nombre}
-                      </MenuItem>
-                    );
-                  })}
-                </Select>
-              </FormControl>
-            </div>
-
-            <div className="flex-row">
-              <div>
-                <Accordion>
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel1a-content"
-                    id="panel1a-header"
+            <Grid container>
+              <Grid item xs={4}>
+                <Item>
+                  <InputMask
+                    disabled={fetching || typeof isbn === "string"}
+                    mask="999 9 99 999999 9"
+                    className="isbn-input"
+                    alwaysShowMask={false}
+                    maskPlaceholder=" "
+                    value={libro.isbn}
+                    id="isbn"
+                    label="ISBN"
+                    onChange={(event: any) =>
+                      setLibro({ ...libro, isbn: event.target.value })
+                    }
                   >
-                    <Typography>Autores</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Box
-                      sx={{
+                    <TextField />
+                  </InputMask>
+                </Item>
+              </Grid>
+              <Grid item xs={8}>
+                <Item>
+                  <TextField
+                    disabled={fetching}
+                    type="text"
+                    id="titulo"
+                    label="Titulo"
+                    onChange={(event) =>
+                      setLibro({ ...libro, titulo: event.target.value })
+                    }
+                    value={libro.titulo}
+                  />
+                </Item>
+              </Grid>
+              <Grid item xs={8}>
+                <Item>
+                  <TextField
+                    disabled={fetching}
+                    type="number"
+                    id="cant_hojas"
+                    inputProps={{
+                      min: 1,
+                      max: 99999,
+                    }}
+                    label="Cantidad de páginas"
+                    onChange={(event: any) => handlePaginasChange(event)}
+                    value={libro.cant_hojas}
+                  />
+                </Item>
+              </Grid>
+              <Grid item xs={4}>
+                <Item>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DesktopDatePicker
+                      views={["year"]}
+                      label="Año"
+                      inputFormat="YYYY"
+                      minDate={dayjs(new Date(1800, 1))}
+                      maxDate={dayjs(Date.now())}
+                      value={libro.anio_edicion}
+                      onChange={(event: Dayjs | null) =>
+                        handleChangeYear(event)
+                      }
+                      renderInput={(params) => <TextField {...params} />}
+                    />
+                  </LocalizationProvider>
+                </Item>
+              </Grid>
+              <Grid item xs={6}>
+                <Item>
+                  <FormControl fullWidth>
+                    <InputLabel>Editorial</InputLabel>
+                    <Select
+                      id="select-editorial"
+                      value={libro.editorial.editorial_id}
+                      label="Editoriales"
+                      onChange={(event) => handleEditorialChange(event)}
+                    >
+                      <MenuItem value={-1}></MenuItem>
+                      {editoriales.map((edi) => {
+                        return (
+                          <MenuItem
+                            key={edi.editorial_id}
+                            value={edi.editorial_id}
+                          >
+                            {edi.nombre}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+                </Item>
+              </Grid>
+              <Grid item xs={6}>
+                <Item>
+                  <FormControl fullWidth>
+                    <InputLabel>Formato</InputLabel>
+                    <Select
+                      id="select-formato"
+                      value={libro.formato.formato_id}
+                      label="Formatos"
+                      onChange={(event) => handleFormatoChange(event)}
+                    >
+                      <MenuItem value={-1}></MenuItem>
+                      {formatos.map((form) => {
+                        return (
+                          <MenuItem
+                            key={form.formato_id}
+                            value={form.formato_id}
+                          >
+                            {form.nombre}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+                </Item>
+              </Grid>
+              <Grid item xs={12}>
+                <Item>
+                  <Paper variant="outlined">
+                    <div
+                      style={{
+                        padding: "1rem",
                         display: "flex",
-                        gap: 1,
+                        gap: "1rem",
+                        alignItems: "center",
+                        flexWrap: "wrap",
                       }}
                     >
-                      {autores.map((data) => (
-                        <Chip
-                          key={data.id_autor}
-                          label={`${data.apellido}, ${data.nombre}`}
-                          onDelete={() => handleAutorRemove(data.id_autor)}
-                        />
-                      ))}
-                    </Box>
-                  </AccordionDetails>
-                </Accordion>
-                <Accordion>
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel2a-content"
-                    id="panel2a-header"
-                  >
-                    <Typography>Temas</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Box
-                      sx={{
+                      <Typography>Autores</Typography>
+                      {libro.autores
+                        .sort((a, b) => (a.apellido < b.apellido ? -1 : 1))
+                        .map((data) => (
+                          <Chip
+                            key={data.id_autor}
+                            label={`${data.apellido}, ${data.nombre}`}
+                            onDelete={() => handleAutorRemove(data.id_autor)}
+                          />
+                        ))}
+                      <Fab
+                        style={{
+                          marginLeft: "auto",
+                        }}
+                        size="small"
+                        color="primary"
+                        aria-label="add"
+                        disabled={libro.autores.length === autores.length}
+                        onClick={() => setModalAutores(true)}
+                      >
+                        <AddIcon />
+                      </Fab>
+                    </div>
+                  </Paper>
+                </Item>
+              </Grid>
+              <Grid item xs={12}>
+                <Item>
+                  <Paper variant="outlined">
+                    <div
+                      style={{
+                        padding: "1rem",
                         display: "flex",
-                        gap: 1,
+                        gap: "1rem",
+                        alignItems: "center",
+                        flexWrap: "wrap",
                       }}
                     >
-                      {autores.map((data) => (
-                        <Chip
-                          key={data.id_autor}
-                          label={`${data.apellido}, ${data.nombre}`}
-                          onDelete={() => handleAutorRemove(data.id_autor)}
-                        />
-                      ))}
-                    </Box>
-                  </AccordionDetails>
-                </Accordion>
-              </div>
-            </div>
-
+                      <Typography>Temas</Typography>
+                      {libro.temas
+                        .sort((a, b) => (a.nombre < b.nombre ? -1 : 1))
+                        .map((data) => (
+                          <Chip
+                            key={data.tema_id}
+                            label={`${data.nombre}`}
+                            onDelete={() => handleTemaRemove(data.tema_id)}
+                          />
+                        ))}
+                      <Fab
+                        style={{
+                          marginLeft: "auto",
+                        }}
+                        size="small"
+                        color="primary"
+                        aria-label="add"
+                        disabled={libro.temas.length === temas.length}
+                        onClick={() => setModalTemas(true)}
+                      >
+                        <AddIcon />
+                      </Fab>
+                    </div>
+                  </Paper>
+                </Item>
+              </Grid>
+            </Grid>
             <div
               style={{ alignSelf: "flex-end", display: "flex", gap: "1rem" }}
             >
@@ -485,6 +564,81 @@ function LibrosForm() {
           value={0}
         />
       </TableContainer>
+      {/* DIALOG de autores */}
+      <Dialog
+        fullWidth={true}
+        maxWidth="sm"
+        open={modalAutores}
+        onClose={() => setModalAutores(false)}
+      >
+        <DialogContent>
+          <nav aria-label="secondary mailbox folders">
+            <List>
+              {libro.autores.length === autores.length ? (
+                <>No hay mas registros</>
+              ) : (
+                <></>
+              )}
+              {autores
+                .filter(
+                  (x) => !libro.autores.some((y) => y.id_autor == x.id_autor)
+                )
+                .map((autor) => (
+                  <ListItem
+                    disablePadding
+                    key={autor.id_autor}
+                    onClick={() => handleAutorAdd(autor)}
+                  >
+                    <ListItemButton>
+                      <ListItemText
+                        primary={`${autor.apellido}, ${autor.nombre}`}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+            </List>
+          </nav>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setModalAutores(false)}>Cerrar</Button>
+        </DialogActions>
+      </Dialog>
+      {/* DIALOG de temas */}
+      <Dialog
+        fullWidth={true}
+        maxWidth="sm"
+        open={modalTemas}
+        onClose={() => setModalTemas(false)}
+      >
+        <DialogContent>
+          <nav aria-label="secondary mailbox folders">
+            <List>
+              {libro.temas.length === temas.length ? (
+                <>No hay mas registros</>
+              ) : (
+                <></>
+              )}
+              {temas
+                .filter((x) => !libro.temas.some((y) => y.tema_id == x.tema_id))
+                .map((tema) => (
+                  <ListItem
+                    disablePadding
+                    key={tema.tema_id}
+                    onClick={() => handleTemaAdd(tema)}
+                  >
+                    <ListItemButton>
+                      <ListItemText primary={`${tema.nombre}`} />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+            </List>
+          </nav>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setModalTemas(false)}>Cerrar</Button>
+        </DialogActions>
+      </Dialog>
+      {/* DIALOG de confirmacion */}
       <Dialog
         open={openModal}
         onClose={handleCloseModalConfirmacion}
@@ -539,5 +693,13 @@ function LibrosForm() {
     </>
   );
 }
+
+const Item = styled(Box)(({ theme }) => ({
+  ...theme.typography.body2,
+  padding: theme.spacing(2),
+  "& > *": {
+    width: "100%",
+  },
+}));
 
 export default LibrosForm;
