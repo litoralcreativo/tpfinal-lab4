@@ -63,10 +63,12 @@ class LibroRepository:
             libro_buscado.editorial_id = datos.editorial_id if datos.editorial_id is not None else libro_buscado.editorial_id
             libro_buscado.formato_id = datos.formato_id if datos.formato_id is not None else libro_buscado.formato.id
 
+        libro_buscado.autores.clear()
         for autores_id in datos.autor_id:
             autor = autor_respository.get_by_id(db,autores_id)
             libro_buscado.autores.append(autor)
 
+        libro_buscado.temas.clear()
         for temas_id in datos.temas_id:
             tema = temas_repository.get_by_id(db,temas_id)
             libro_buscado.temas.append(tema)
