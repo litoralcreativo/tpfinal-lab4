@@ -69,5 +69,8 @@ def delete_libro(isbn:str = Path(min_length=11,max_length=13),db:Session = Depen
 
 @libro_router.get('/query/',response_model=list[LibroDTO])
 def get_by_query(editorial_id:str = None, titulo:str = None, tema_id:str = None, db:Session = Depends(get_db)) -> List[LibroDTO]:
-    result = libro_repository.get_by_query(db,titulo,editorial_id,tema_id)
-    return create_list_libro(result,db)
+    try:
+        result = libro_repository.get_by_query(db,titulo,editorial_id,tema_id)
+        return create_list_libro(result,db)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'Se dio el siguiente error: {exc}')
