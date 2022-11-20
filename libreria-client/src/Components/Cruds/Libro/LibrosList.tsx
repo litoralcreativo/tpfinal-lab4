@@ -46,7 +46,7 @@ function FormatosList() {
   useEffect(() => {
     setFetching(true);
     LibreriaServices.libros
-      .getAll()
+      .getAllByQuery("", [], [])
       .subscribe({
         next: (res) => {
           setDatos(res);

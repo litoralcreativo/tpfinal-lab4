@@ -75,4 +75,43 @@ export default class LibroService extends CRUD<Libro> {
       .delete<any>(`http://localhost:8000/${this.CONTROLLER}/${id}`)
       .pipe(map((x) => x.response));
   }
+
+  getAllByQuery = (
+    titulo: string = "",
+    editoriales: number[] = [],
+    temas: number[] = []
+  ) => {
+    let query: string = this.createQuery(titulo, editoriales, temas);
+    return ajax
+      .get<Libro[]>(`http://localhost:8000/${this.CONTROLLER}/query/${query}`)
+      .pipe(map((x) => x.response));
+  };
+
+  createQuery = (
+    titulo: string,
+    editoriales: number[],
+    temas: number[]
+  ): string => {
+    let result: string = "";
+
+    if (titulo !== "" || editoriales?.length !== 0 || temas.length !== 0) {
+      result += "?";
+    }
+
+    if (titulo !== "") {
+      result += `titulo=${titulo}`;
+    }
+
+    if (editoriales.length !== 0) {
+      if (result.charAt(result.length - 1) !== "?") result += "&";
+      result += `editorial_id=${editoriales.join(",")}`;
+    }
+
+    if (temas.length !== 0) {
+      if (result.charAt(result.length - 1) !== "?") result += "&";
+      result += `tema_id=${temas.join(",")}`;
+    }
+
+    return result;
+  };
 }

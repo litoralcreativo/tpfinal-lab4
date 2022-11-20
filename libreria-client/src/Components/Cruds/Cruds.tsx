@@ -6,7 +6,7 @@ import "./Cruds.css";
 function Cruds() {
   const [value, setValue] = useState("libros");
   let navigate = useNavigate();
-  let location = useLocation();
+  const location = useLocation();
   useEffect(() => {
     navigate(value);
   }, [value]);
