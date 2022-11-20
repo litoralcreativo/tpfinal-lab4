@@ -157,7 +157,7 @@ function FormatosForm() {
   return (
     <>
       <TableContainer component={Paper}>
-        <Box component="form" noValidate autoComplete="off">
+        <Box>
           <div className="form-controls">
             <h2>
               {formato.formato_id == -1

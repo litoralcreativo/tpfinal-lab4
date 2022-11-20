@@ -157,7 +157,7 @@ function TemasForm() {
   return (
     <>
       <TableContainer component={Paper}>
-        <Box component="form" noValidate autoComplete="off">
+        <Box>
           <div className="form-controls">
             <h2>
               {tema.tema_id == -1

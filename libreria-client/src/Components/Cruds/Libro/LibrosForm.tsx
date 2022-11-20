@@ -344,7 +344,7 @@ function LibrosForm() {
   return (
     <>
       <TableContainer component={Paper}>
-        <Box component="form" noValidate autoComplete="off">
+        <Box>
           <div className="form-controls">
             <h2>{!isbn ? `Nuevo libro` : `Edición`}</h2>
             <Grid container>
