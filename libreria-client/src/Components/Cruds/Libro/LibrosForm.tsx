@@ -305,6 +305,7 @@ function LibrosForm() {
     setLibro({ ...libro, autores: [...libro.autores, autor] });
     setModalAutores(libro.autores.length !== autores.length);
   };
+
   const handleAutorRemove = (id: number) => {
     const newList = libro.autores.filter((x) => x.id_autor !== id);
     setLibro({ ...libro, autores: newList });
@@ -314,6 +315,7 @@ function LibrosForm() {
     setLibro({ ...libro, temas: [...libro.temas, tema] });
     setModalTemas(libro.temas.length !== temas.length);
   };
+
   const handleTemaRemove = (id: number) => {
     const newList = libro.temas.filter((x) => x.tema_id !== id);
     setLibro({ ...libro, temas: newList });
@@ -337,7 +339,6 @@ function LibrosForm() {
     if (libro.editorial.editorial_id != initialLibro.editorial?.editorial_id)
       return true;
 
-    //TODO: chequear cambios en arrays..
     if (checkTemas()) {
       return true;
     }
@@ -354,42 +355,44 @@ function LibrosForm() {
    * @returns Boolean [Si hay cambios en el nuevo array de temas es True]
    */
   const checkTemas = (): boolean => {
-    let huboCambios:boolean = false;
-    // en el caso que el length sea el mismo reviso si las ids de los temas son distintos
-    initialLibro.temas.forEach((initialTema) => {
-      let arrayTemasAux:Tema[] = libro.temas.filter((x) => x.tema_id === initialTema.tema_id)
-      if(arrayTemasAux.length === 0) {
-        huboCambios = true;
-        return;
-      }
-    })
     //reviso si cambio el length para no tener errores
-    if(libro.temas.length !== initialLibro.temas.length) {
-      huboCambios = true;
+    if (libro.temas.length !== initialLibro.temas.length) {
+      return true;
     }
-    return huboCambios;
-}
 
-/**
- * Revisa si hubo cambios en el array de autores
- * @returns Boolean [Si cambio el length o los autores son distintos devuelve true]
- */
-  const checkAutores = (): boolean => {
-    let huboCambios:boolean = false;
-    // en el caso que el length sea el mismo reviso si los autores son distintos
-    initialLibro.autores.forEach((initialAutor) => {
-      let arrayAutorAux:Autor[] = libro.autores.filter((x) => x.id_autor === initialAutor.id_autor)
-      if(arrayAutorAux.length === 0) {
-        huboCambios = true;
-        return;
-      }
-    })
-    //reviso si cambio el length para no tener errores posteriormente
-    if(libro.autores.length !== initialLibro.autores.length) {
-      huboCambios = true;
+    // en el caso que el length sea el mismo reviso si las ids de los temas son distintos
+    if (
+      initialLibro.temas.some(
+        (x) => !libro.temas.some((l) => l.tema_id === x.tema_id)
+      )
+    ) {
+      return true;
     }
-    return huboCambios;
-  }
+
+    return false;
+  };
+
+  /**
+   * Revisa si hubo cambios en el array de autores
+   * @returns Boolean [Si cambio el length o los autores son distintos devuelve true]
+   */
+  const checkAutores = (): boolean => {
+    //reviso si cambio el length para no tener errores posteriormente
+    if (libro.autores.length !== initialLibro.autores.length) {
+      return true;
+    }
+
+    // en el caso que el length sea el mismo reviso si los autores son distintos
+    if (
+      initialLibro.autores.some(
+        (x) => !libro.autores.some((l) => l.id_autor === x.id_autor)
+      )
+    ) {
+      return true;
+    }
+
+    return false;
+  };
 
   return (
     <>
@@ -420,7 +423,7 @@ function LibrosForm() {
               <Grid item xs={8}>
                 <Item>
                   <TextField
-                    disabled={fetching || !(locationState as any).canEdit}
+                    disabled={fetching || !(locationState as any)?.canEdit}
                     type="text"
                     id="titulo"
                     label="Titulo"
@@ -434,7 +437,7 @@ function LibrosForm() {
               <Grid item xs={8}>
                 <Item>
                   <TextField
-                    disabled={fetching || !(locationState as any).canEdit}
+                    disabled={fetching || !(locationState as any)?.canEdit}
                     type="number"
                     id="cant_hojas"
                     inputProps={{
@@ -451,7 +454,7 @@ function LibrosForm() {
                 <Item>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DesktopDatePicker
-                      disabled={fetching || !(locationState as any).canEdit}
+                      disabled={fetching || !(locationState as any)?.canEdit}
                       views={["year"]}
                       label="Año"
                       inputFormat="YYYY"
@@ -470,7 +473,7 @@ function LibrosForm() {
                 <Item>
                   <FormControl
                     fullWidth
-                    disabled={fetching || !(locationState as any).canEdit}
+                    disabled={fetching || !(locationState as any)?.canEdit}
                   >
                     <InputLabel>Editorial</InputLabel>
                     <Select
@@ -498,7 +501,7 @@ function LibrosForm() {
                 <Item>
                   <FormControl
                     fullWidth
-                    disabled={fetching || !(locationState as any).canEdit}
+                    disabled={fetching || !(locationState as any)?.canEdit}
                   >
                     <InputLabel>Formato</InputLabel>
                     <Select
@@ -542,13 +545,13 @@ function LibrosForm() {
                             key={data.id_autor}
                             label={`${data.apellido}, ${data.nombre}`}
                             onDelete={
-                              !(locationState as any).canEdit
+                              !(locationState as any)?.canEdit
                                 ? undefined
                                 : () => handleAutorRemove(data.id_autor)
                             }
                           />
                         ))}
-                      {(locationState as any).canEdit ? (
+                      {(locationState as any)?.canEdit ? (
                         <>
                           <Fab
                             style={{
@@ -590,14 +593,14 @@ function LibrosForm() {
                             key={data.tema_id}
                             label={`${data.nombre}`}
                             onDelete={
-                              !(locationState as any).canEdit
+                              !(locationState as any)?.canEdit
                                 ? undefined
                                 : () => handleTemaRemove(data.tema_id)
                             }
                           />
                         ))}
 
-                      {(locationState as any).canEdit ? (
+                      {(locationState as any)?.canEdit ? (
                         <>
                           <Fab
                             style={{
@@ -626,14 +629,20 @@ function LibrosForm() {
               <Button variant="outlined" onClick={() => navigate("..")}>
                 Cancelar
               </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => setOpenModal(true)}
-                disabled={!validForm}
-              >
-                Guardar
-              </Button>
+              {(locationState as any)?.canEdit ? (
+                <>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setOpenModal(true)}
+                    disabled={!validForm}
+                  >
+                    Guardar
+                  </Button>
+                </>
+              ) : (
+                <></>
+              )}
             </div>
           </div>
         </Box>

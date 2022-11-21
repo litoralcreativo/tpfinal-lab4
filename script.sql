@@ -1,8 +1,6 @@
 INSERT INTO public.editorial(nombre, direccion, url) VALUES
 ('Planeta', 'Av. Independencia 1668, CABA', 'https://www.planetadelibros.com/'),
-('Atlántida', 'Elcano 3847, CABA', 'https://atlantida.com.ar/'),
-('Kapelusz', 'Av. Leandro N. Alem 720 - Piso 6, CABA', 'https://www.editorialkapelusz.com/'),
-('Perfil', 'California 2715, CABA', 'https://www.perfil.com/');
+('Andavira', 'Vía Edison, 33 - Santiago de Compostela (A Coruña)', 'https://www.andavira.com/');
 
 INSERT INTO public.formato(nombre) VALUES
 ('Tapa blanda'),
@@ -12,16 +10,19 @@ INSERT INTO public.formato(nombre) VALUES
 
 INSERT INTO public.tema(nombre) VALUES
 ('Poesía'),
-('Terror'),
+('Autoayuda'),
 ('Novela'),
 ('Thriller');
 
 INSERT INTO public.autor(dni, nombre, apellido) VALUES
-(34650674, 'Gaston', 'Chatelet'),
-(34299864, 'Eloisa', 'Garcia Anino');
+(10456789, 'Edith', 'Eger'), 
+(11342876, 'Álex', 'Rovira'), 
+(24654100, 'Vincas', 'Richardson'), 
+(21123456, 'Fernando', 'Trías de Bes'), 
+(14702583, 'Paula', 'Hawkins');
 
 INSERT INTO public.libro(isbn, titulo, cant_hojas, anio_edicion, editorial_id, formato_id) VALUES 
-(1234567890123, 'Opera Prima', 123, 1998, 1, 1),
-(1234567890124, 'Segundo libro', 456, 2008, 2, 4),
-(1234567890125, 'El tercero viene con mas contenido', 789, 2000, 2, 3),
-(1234567890126, 'El cuarto es un robo', 321, 1977, 3, 3);
+(9788408231622, 'Las siete llaves', 304, 2020, 1, 2),
+(9788408263722, 'La bailarina de Auschwitz', 416, 2022, 1, 1),
+(9788445012376, 'Wody', 416, 2022, 1, 1),
+(9788408263715, 'La chica del tren', 496, 2022, 1, 2);

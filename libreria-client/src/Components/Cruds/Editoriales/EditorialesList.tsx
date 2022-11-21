@@ -243,7 +243,6 @@ function EditorialesList() {
                         bgcolor: "background.paper",
                         position: "relative",
                         overflow: "auto",
-                        maxHeight: 300,
                         "& ul": { padding: 0 },
                       }}
                       subheader={<li />}
@@ -260,7 +259,7 @@ function EditorialesList() {
                                   {libro.autores[0].apellido}
                                 </>
                               ) : (
-                                <></>
+                                <>Autor indefinido</>
                               )
                             }
                           />

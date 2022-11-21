@@ -144,7 +144,7 @@ function FormatosList() {
   }
 
   function onAltaClick() {
-    navigate("alta");
+    navigate("alta", { state: { canEdit: true } });
   }
 
   const handleOpenModalConfirmacion = (id: number) => {
