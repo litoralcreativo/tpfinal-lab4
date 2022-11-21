@@ -338,9 +338,58 @@ function LibrosForm() {
       return true;
 
     //TODO: chequear cambios en arrays..
+    if (checkTemas()) {
+      return true;
+    }
+
+    if (checkAutores()) {
+      return true;
+    }
 
     return false;
   };
+
+  /**
+   * Revisa si hubo cambios en el array de temas
+   * @returns Boolean [Si hay cambios en el nuevo array de temas es True]
+   */
+  const checkTemas = (): boolean => {
+    let huboCambios:boolean = false;
+    // en el caso que el length sea el mismo reviso si las ids de los temas son distintos
+    initialLibro.temas.forEach((initialTema) => {
+      let arrayTemasAux:Tema[] = libro.temas.filter((x) => x.tema_id === initialTema.tema_id)
+      if(arrayTemasAux.length === 0) {
+        huboCambios = true;
+        return;
+      }
+    })
+    //reviso si cambio el length para no tener errores
+    if(libro.temas.length !== initialLibro.temas.length) {
+      huboCambios = true;
+    }
+    return huboCambios;
+}
+
+/**
+ * Revisa si hubo cambios en el array de autores
+ * @returns Boolean [Si cambio el length o los autores son distintos devuelve true]
+ */
+  const checkAutores = (): boolean => {
+    let huboCambios:boolean = false;
+    // en el caso que el length sea el mismo reviso si los autores son distintos
+    initialLibro.autores.forEach((initialAutor) => {
+      let arrayAutorAux:Autor[] = libro.autores.filter((x) => x.id_autor === initialAutor.id_autor)
+      if(arrayAutorAux.length === 0) {
+        huboCambios = true;
+        return;
+      }
+    })
+    //reviso si cambio el length para no tener errores posteriormente
+    if(libro.autores.length !== initialLibro.autores.length) {
+      huboCambios = true;
+    }
+    return huboCambios;
+  }
 
   return (
     <>
