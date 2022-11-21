@@ -401,7 +401,7 @@ function LibrosForm() {
           <div className="form-controls">
             <h2>{!isbn ? `Nuevo libro` : `Edición`}</h2>
             <Grid container>
-              <Grid item xs={4}>
+              <Grid item md={4} xs={12}>
                 <Item>
                   <InputMask
                     disabled={fetching || typeof isbn === "string"}
@@ -420,7 +420,7 @@ function LibrosForm() {
                   </InputMask>
                 </Item>
               </Grid>
-              <Grid item xs={8}>
+              <Grid item md={8} xs={12}>
                 <Item>
                   <TextField
                     disabled={fetching || !(locationState as any)?.canEdit}
@@ -434,7 +434,7 @@ function LibrosForm() {
                   />
                 </Item>
               </Grid>
-              <Grid item xs={8}>
+              <Grid item md={8} xs={12}>
                 <Item>
                   <TextField
                     disabled={fetching || !(locationState as any)?.canEdit}
@@ -450,7 +450,7 @@ function LibrosForm() {
                   />
                 </Item>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item md={4} xs={12}>
                 <Item>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DesktopDatePicker
@@ -469,7 +469,7 @@ function LibrosForm() {
                   </LocalizationProvider>
                 </Item>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item md={6} xs={12}>
                 <Item>
                   <FormControl
                     fullWidth
@@ -497,7 +497,7 @@ function LibrosForm() {
                   </FormControl>
                 </Item>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item md={6} xs={12}>
                 <Item>
                   <FormControl
                     fullWidth
@@ -525,7 +525,7 @@ function LibrosForm() {
                   </FormControl>
                 </Item>
               </Grid>
-              <Grid item xs={12}>
+              <Grid item md={12} xs={12}>
                 <Item>
                   <Paper variant="outlined">
                     <div
@@ -573,7 +573,7 @@ function LibrosForm() {
                   </Paper>
                 </Item>
               </Grid>
-              <Grid item xs={12}>
+              <Grid item md={12} xs={12}>
                 <Item>
                   <Paper variant="outlined">
                     <div
