@@ -1,7 +1,12 @@
 import { map, Observable } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import { CRUD } from "../Models/Crud.model";
-import { Libro, LibroDTO, LibroPayloadDTO } from "../Models/Libro.model";
+import {
+  Libro,
+  LibroDTO,
+  LibroPayloadDTO,
+  LibrosQueryString,
+} from "../Models/Libro.model";
 
 export default class LibroService extends CRUD<Libro> {
   parseToLibroDTO = (libro: Libro): LibroDTO => {
@@ -76,23 +81,22 @@ export default class LibroService extends CRUD<Libro> {
       .pipe(map((x) => x.response));
   }
 
-  getAllByQuery = (
-    titulo: string = "",
-    editoriales: number[] = [],
-    temas: number[] = []
-  ) => {
-    let query: string = this.createQuery(titulo, editoriales, temas);
+  getAllByQuery = (queryString: LibrosQueryString) => {
+    let query: string = this.createQuery(queryString);
     return ajax
       .get<Libro[]>(`http://localhost:8000/${this.CONTROLLER}/query/${query}`)
       .pipe(map((x) => x.response));
   };
 
-  createQuery = (
-    titulo: string,
-    editoriales: number[],
-    temas: number[]
-  ): string => {
+  /**
+   * Metodo que genera el string de una query
+   * @param queryString interfaz donde vienen los elementos del query
+   * @returns string que representa el query
+   */
+  createQuery = (queryString: LibrosQueryString): string => {
     let result: string = "";
+
+    let { titulo, editoriales, temas } = queryString;
 
     if (titulo !== "" || editoriales?.length !== 0 || temas.length !== 0) {
       result += "?";
@@ -104,12 +108,14 @@ export default class LibroService extends CRUD<Libro> {
 
     if (editoriales.length !== 0) {
       if (result.charAt(result.length - 1) !== "?") result += "&";
-      result += `editorial_id=${editoriales.join(",")}`;
+      result += `editorial_id=${editoriales
+        .map((x) => x.editorial_id)
+        .join(",")}`;
     }
 
     if (temas.length !== 0) {
       if (result.charAt(result.length - 1) !== "?") result += "&";
-      result += `tema_id=${temas.join(",")}`;
+      result += `tema_id=${temas.map((x) => x.tema_id).join(",")}`;
     }
 
     return result;

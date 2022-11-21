@@ -1,31 +1,50 @@
 import {
+  Accordion,
+  AccordionSummary,
+  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  FormControl,
+  Grid,
   IconButton,
+  InputLabel,
   LinearProgress,
+  MenuItem,
+  OutlinedInput,
   Paper,
+  Select,
+  SelectChangeEvent,
+  styled,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
+  TextField,
+  AccordionDetails,
+  AccordionActions,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
+import SearchIcon from "@mui/icons-material/Search";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import { Link, useNavigate } from "react-router-dom";
 
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertColor } from "@mui/material/Alert";
-import { Libro } from "../../../Models/Libro.model";
+import { Libro, LibrosQueryString } from "../../../Models/Libro.model";
 import { LibreriaServices } from "../../../Services/services.factory";
+import { Editorial } from "../../../Models/Editorial.model";
+import { Tema } from "../../../Models/Tema.model";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 function FormatosList() {
   let navigate = useNavigate();
@@ -43,10 +62,29 @@ function FormatosList() {
   });
   const [idToDelete, setIdToDelete] = useState<number | null>(null);
 
+  const [editoriales, setEditoriales] = useState<Editorial[]>([]);
+  const [temas, setTemas] = useState<Tema[]>([]);
+
+  const [queryString, setQueryString] = useState<LibrosQueryString>({
+    titulo: "",
+    editoriales: [],
+    temas: [],
+  });
+
+  const [queryForm, setQueryForm] = useState<{
+    titulo: string;
+    editoriales: Number[];
+    temas: Number[];
+  }>({
+    titulo: "",
+    editoriales: [],
+    temas: [],
+  });
+
   useEffect(() => {
     setFetching(true);
     LibreriaServices.libros
-      .getAllByQuery("", [], [])
+      .getAllByQuery(queryString)
       .subscribe({
         next: (res) => {
           setDatos(res);
@@ -61,10 +99,48 @@ function FormatosList() {
       })
       .add(() => setFetching(false));
     return () => {};
-  }, [idToDelete]);
+  }, [idToDelete, queryString]);
 
-  function onIdClick(id: number) {
-    navigate(id ? id.toString() : "alta");
+  /* Obtengo temas */
+  useEffect(() => {
+    LibreriaServices.temas
+      .getAll()
+      .subscribe({
+        next: (res) => {
+          setTemas(res);
+        },
+        error: (err) =>
+          setOpenAlert({
+            state: true,
+            type: "error",
+            message: "No se pudo editar de forma satisfactoria",
+          }),
+      })
+      .add(() => {});
+    return () => {};
+  }, []);
+
+  /* Obtengo editoriales */
+  useEffect(() => {
+    LibreriaServices.editoriales
+      .getAll()
+      .subscribe({
+        next: (res) => {
+          setEditoriales(res);
+        },
+        error: (err) =>
+          setOpenAlert({
+            state: true,
+            type: "error",
+            message: "No se pudo editar de forma satisfactoria",
+          }),
+      })
+      .add(() => {});
+    return () => {};
+  }, []);
+
+  function onIdClick(id: number, edition: boolean) {
+    navigate(id ? id.toString() : "alta", { state: { canEdit: edition } });
   }
 
   function onAltaClick() {
@@ -105,6 +181,38 @@ function FormatosList() {
     setOpenAlert((prev) => ({ ...prev, state: false }));
   };
 
+  const handleEditorialesSelectorChange = (
+    event: SelectChangeEvent<Number[]>
+  ) => {
+    const {
+      target: { value },
+    } = event;
+    if (typeof value !== "string") {
+      // setEditorialesSeleccionadas(value);
+      setQueryForm({ ...queryForm, editoriales: value });
+    }
+  };
+
+  const handleTemasSelectorChange = (event: SelectChangeEvent<Number[]>) => {
+    const {
+      target: { value },
+    } = event;
+    if (typeof value !== "string") {
+      // setTemasSeleccionados(value);
+      setQueryForm({ ...queryForm, temas: value });
+    }
+  };
+
+  const onBusquedaBtnClick = () => {
+    setQueryString({
+      titulo: queryForm.titulo,
+      editoriales: queryForm.editoriales.map(
+        (x) => editoriales.find((e) => e.editorial_id === x)!
+      ),
+      temas: queryForm.temas.map((x) => temas.find((e) => e.tema_id === x)!),
+    });
+  };
+
   return (
     <>
       <Button
@@ -115,6 +223,85 @@ function FormatosList() {
       >
         Agregar
       </Button>
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel-content"
+          id="panel-header"
+        >
+          <Typography>Busqueda</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Grid container>
+            <Grid item xs={12}>
+              <Item>
+                <TextField
+                  type="text"
+                  id="titulo"
+                  label="Titulo"
+                  value={queryForm.titulo}
+                  onChange={(event) =>
+                    setQueryForm({ ...queryForm, titulo: event.target.value })
+                  }
+                />
+              </Item>
+            </Grid>
+            <Grid item xs={6}>
+              <Item>
+                <FormControl>
+                  <InputLabel id="editoriales-label">Editoriales</InputLabel>
+                  <Select
+                    labelId="editoriales-label"
+                    id="editoriales"
+                    multiple
+                    value={queryForm.editoriales}
+                    onChange={handleEditorialesSelectorChange}
+                    input={<OutlinedInput label="Editoriales" />}
+                  >
+                    {editoriales.map((editorial) => (
+                      <MenuItem
+                        key={editorial.editorial_id}
+                        value={editorial.editorial_id}
+                      >
+                        {editorial.nombre}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Item>
+            </Grid>
+            <Grid item xs={6}>
+              <Item>
+                <FormControl>
+                  <InputLabel id="temas-label">Temas</InputLabel>
+                  <Select
+                    labelId="temas-label"
+                    id="temas"
+                    multiple
+                    value={queryForm.temas}
+                    onChange={handleTemasSelectorChange}
+                    input={<OutlinedInput label="Temas" />}
+                  >
+                    {temas.map((tema) => (
+                      <MenuItem key={tema.tema_id} value={tema.tema_id}>
+                        {tema.nombre}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Item>
+            </Grid>
+          </Grid>
+        </AccordionDetails>
+        <AccordionActions>
+          <Button
+            onClick={() => onBusquedaBtnClick()}
+            startIcon={<SearchIcon />}
+          >
+            Buscar
+          </Button>
+        </AccordionActions>
+      </Accordion>
       <TableContainer component={Paper}>
         <LinearProgress
           variant={fetching ? "indeterminate" : "determinate"}
@@ -141,9 +328,9 @@ function FormatosList() {
                 <TableCell align="left">{libro.cant_hojas}</TableCell>
                 <TableCell align="left">
                   {libro.editorial?.url ? (
-                    <Link to={libro.editorial.url}>
+                    <a target="_blank" href={libro.editorial.url}>
                       {libro.editorial.nombre}
-                    </Link>
+                    </a>
                   ) : (
                     <>{libro.editorial?.nombre}</>
                   )}
@@ -151,10 +338,18 @@ function FormatosList() {
                 <TableCell align="left">{libro.formato?.nombre}</TableCell>
                 <TableCell align="right">
                   <IconButton
+                    color="primary"
+                    aria-label="upload picture"
+                    component="label"
+                    onClick={() => onIdClick(libro.isbn!, false)}
+                  >
+                    <SearchIcon />
+                  </IconButton>
+                  <IconButton
                     color="success"
                     aria-label="upload picture"
                     component="label"
-                    onClick={() => onIdClick(libro.isbn!)}
+                    onClick={() => onIdClick(libro.isbn!, true)}
                   >
                     <EditIcon />
                   </IconButton>
@@ -227,5 +422,13 @@ function FormatosList() {
     </>
   );
 }
+
+const Item = styled(Box)(({ theme }) => ({
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  "& > *": {
+    width: "100%",
+  },
+}));
 
 export default FormatosList;

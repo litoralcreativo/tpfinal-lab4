@@ -32,7 +32,7 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 import Snackbar from "@mui/material/Snackbar";
 import Chip from "@mui/material/Chip";
@@ -54,6 +54,7 @@ const InputMask = require("react-input-mask");
 
 function LibrosForm() {
   let navigate = useNavigate();
+  const { state: locationState } = useLocation();
   const { id: isbn } = useParams();
 
   const [fetching, setFetching] = useState(false);
@@ -154,7 +155,7 @@ function LibrosForm() {
     return () => {};
   }, []);
 
-  /* Obtengo autores */
+  /* Obtengo temas */
   useEffect(() => {
     LibreriaServices.temas
       .getAll()
@@ -370,7 +371,7 @@ function LibrosForm() {
               <Grid item xs={8}>
                 <Item>
                   <TextField
-                    disabled={fetching}
+                    disabled={fetching || !(locationState as any).canEdit}
                     type="text"
                     id="titulo"
                     label="Titulo"
@@ -384,7 +385,7 @@ function LibrosForm() {
               <Grid item xs={8}>
                 <Item>
                   <TextField
-                    disabled={fetching}
+                    disabled={fetching || !(locationState as any).canEdit}
                     type="number"
                     id="cant_hojas"
                     inputProps={{
@@ -401,6 +402,7 @@ function LibrosForm() {
                 <Item>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DesktopDatePicker
+                      disabled={fetching || !(locationState as any).canEdit}
                       views={["year"]}
                       label="Año"
                       inputFormat="YYYY"
@@ -417,7 +419,10 @@ function LibrosForm() {
               </Grid>
               <Grid item xs={6}>
                 <Item>
-                  <FormControl fullWidth>
+                  <FormControl
+                    fullWidth
+                    disabled={fetching || !(locationState as any).canEdit}
+                  >
                     <InputLabel>Editorial</InputLabel>
                     <Select
                       id="select-editorial"
@@ -442,7 +447,10 @@ function LibrosForm() {
               </Grid>
               <Grid item xs={6}>
                 <Item>
-                  <FormControl fullWidth>
+                  <FormControl
+                    fullWidth
+                    disabled={fetching || !(locationState as any).canEdit}
+                  >
                     <InputLabel>Formato</InputLabel>
                     <Select
                       id="select-formato"
@@ -484,21 +492,31 @@ function LibrosForm() {
                           <Chip
                             key={data.id_autor}
                             label={`${data.apellido}, ${data.nombre}`}
-                            onDelete={() => handleAutorRemove(data.id_autor)}
+                            onDelete={
+                              !(locationState as any).canEdit
+                                ? undefined
+                                : () => handleAutorRemove(data.id_autor)
+                            }
                           />
                         ))}
-                      <Fab
-                        style={{
-                          marginLeft: "auto",
-                        }}
-                        size="small"
-                        color="primary"
-                        aria-label="add"
-                        disabled={libro.autores.length === autores.length}
-                        onClick={() => setModalAutores(true)}
-                      >
-                        <AddIcon />
-                      </Fab>
+                      {(locationState as any).canEdit ? (
+                        <>
+                          <Fab
+                            style={{
+                              marginLeft: "auto",
+                            }}
+                            size="small"
+                            color="primary"
+                            aria-label="add"
+                            disabled={libro.autores.length === autores.length}
+                            onClick={() => setModalAutores(true)}
+                          >
+                            <AddIcon />
+                          </Fab>
+                        </>
+                      ) : (
+                        <></>
+                      )}
                     </div>
                   </Paper>
                 </Item>
@@ -522,21 +540,32 @@ function LibrosForm() {
                           <Chip
                             key={data.tema_id}
                             label={`${data.nombre}`}
-                            onDelete={() => handleTemaRemove(data.tema_id)}
+                            onDelete={
+                              !(locationState as any).canEdit
+                                ? undefined
+                                : () => handleTemaRemove(data.tema_id)
+                            }
                           />
                         ))}
-                      <Fab
-                        style={{
-                          marginLeft: "auto",
-                        }}
-                        size="small"
-                        color="primary"
-                        aria-label="add"
-                        disabled={libro.temas.length === temas.length}
-                        onClick={() => setModalTemas(true)}
-                      >
-                        <AddIcon />
-                      </Fab>
+
+                      {(locationState as any).canEdit ? (
+                        <>
+                          <Fab
+                            style={{
+                              marginLeft: "auto",
+                            }}
+                            size="small"
+                            color="primary"
+                            aria-label="add"
+                            disabled={libro.temas.length === temas.length}
+                            onClick={() => setModalTemas(true)}
+                          >
+                            <AddIcon />
+                          </Fab>
+                        </>
+                      ) : (
+                        <></>
+                      )}
                     </div>
                   </Paper>
                 </Item>

@@ -35,3 +35,9 @@ export interface LibroPayloadDTO {
   temas_id: number[];
   autor_id: number[];
 }
+
+export interface LibrosQueryString {
+  titulo: string;
+  editoriales: Editorial[];
+  temas: Tema[];
+}
