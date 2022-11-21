@@ -222,7 +222,7 @@ function FormatosList() {
                       aria-controls="panel1a-content"
                       id="panel1a-header"
                     >
-                      <Typography>Libros asociados a este formato</Typography>
+                      Libros asociados a este formato
                     </AccordionSummary>
                   </Badge>
                   <AccordionDetails>

@@ -232,7 +232,7 @@ function EditorialesList() {
                       aria-controls="panel1a-content"
                       id="panel1a-header"
                     >
-                      <Typography>Libros asociados a esta editorial</Typography>
+                      Libros asociados a esta editorial
                     </AccordionSummary>
                   </Badge>
                   <AccordionDetails>

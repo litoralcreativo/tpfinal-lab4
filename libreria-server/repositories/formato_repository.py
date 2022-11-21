@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select,desc,func
+from sqlalchemy import select,desc,func,Integer
 from models.formato_model import Formato
 from schemas.formato_schemas import FormatoNoId,FormatoForUpdate
 from typing import List
@@ -12,6 +12,10 @@ class FormatoRepository:
 
     def get_by_id(self,db:Session, id:int) -> Formato:
         result = db.execute(select(Formato).where(Formato.formato_id == id)).scalar()
+        return result
+
+    def get_count(self,db:Session) -> Integer:
+        result = db.query(func.count(Formato.formato_id)).scalar()
         return result
 
     def new_formato(self, db:Session, datos:FormatoNoId) -> Formato:

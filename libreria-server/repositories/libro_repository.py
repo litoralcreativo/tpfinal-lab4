@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, Integer, func
 from models.libro_model import Libro
 from models.tema_model import Tema
 from schemas.libro_schemas import LibroBase,LibroForUpdate,LibroDTO
@@ -19,6 +19,10 @@ class LibroRepository:
 
     def get_all(self,db:Session) -> List[Libro]:
         result = db.execute(select(Libro).order_by(Libro.isbn)).scalars().all()
+        return result
+
+    def get_count(self,db:Session) -> Integer:
+        result = db.query(func.count(Libro.isbn)).scalar()
         return result
 
     def new_libro(self,db:Session,datos:LibroBase) -> Libro:

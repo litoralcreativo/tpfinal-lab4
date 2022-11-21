@@ -2,6 +2,7 @@ import AutorService from "./autores.service";
 import EditorialService from "./editoriales.service";
 import FormatoService from "./formatos.service";
 import LibroService from "./libros.service";
+import MonitorService from "./monitor.service";
 import TemaService from "./temas.service";
 
 export class LibreriaServices {
@@ -10,4 +11,5 @@ export class LibreriaServices {
   static autores: AutorService = new AutorService();
   static formatos: FormatoService = new FormatoService();
   static temas: TemaService = new TemaService();
+  static monitor: MonitorService = new MonitorService();
 }

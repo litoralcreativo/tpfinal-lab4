@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select,desc
+from sqlalchemy import select,desc,func,Integer
 from models.tema_model import Tema
 from schemas.tema_schemas import TemaNoId,TemaForUpdate,TemaDTO
 from typing import List
@@ -11,6 +11,10 @@ class TemaRepository:
 
     def get_by_id(self,db:Session, id:int) -> Tema:
         result = db.execute(select(Tema).where(Tema.tema_id == id)).scalar()
+        return result
+
+    def get_count(self,db:Session) -> Integer:
+        result = db.query(func.count(Tema.tema_id)).scalar()
         return result
 
     def new_tema(self, db:Session, datos:TemaNoId) -> Tema:

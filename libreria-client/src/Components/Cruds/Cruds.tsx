@@ -8,7 +8,11 @@ function Cruds() {
   let navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
-    navigate(value);
+    const goto = (location.state as any)?.goto;
+    if (goto) {
+      setValue(goto);
+      navigate(value);
+    } else navigate(value);
   }, [value]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {

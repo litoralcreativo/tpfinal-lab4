@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select,desc
+from sqlalchemy import select,desc,func,Integer
 from models.autor_model import Autor
 from schemas.autor_schemas import AutorNoId,AutorForUpdate
 from typing import List
@@ -24,6 +24,16 @@ class AutorRepository:
 
         """
         result = db.execute(select(Autor).where(Autor.id_autor == id_autor)).scalar()
+        return result
+
+    def get_count(self,db:Session) -> Integer:
+        """Devuelve la cantidad de autores del sistema
+        
+        Return:
+            int (cantidad)
+
+        """
+        result = db.query(func.count(Autor.id_autor)).scalar()
         return result
 
     def new_autor(self, db:Session, datos:AutorNoId) -> Autor:
